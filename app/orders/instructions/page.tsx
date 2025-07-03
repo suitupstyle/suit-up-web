@@ -7,16 +7,16 @@ import {
 	ArrowPathIcon,
 	CheckCircleIcon,
 	XCircleIcon,
-	ChevronLeftIcon,
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
+import { useImageStore } from '@/app/stores/imageStore'
 
 export default function Instructions() {
-	const [frontImage, setFrontImage] = useState<string | null>(null)
-	const [sideImage, setSideImage] = useState<string | null>(null)
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null)
 	const [error, setError] = useState<string | null>(null)
+	const { frontImage, setFrontImage, sideImage, setSideImage } =
+		useImageStore()
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -109,7 +109,7 @@ export default function Instructions() {
 							<img
 								src={frontImage}
 								alt="Front preview"
-								className="w-full h-full object-cover"
+								className="w-full h-full object-contain"
 							/>
 						) : (
 							<div className="text-center p-4">
@@ -134,7 +134,7 @@ export default function Instructions() {
 							<img
 								src={sideImage}
 								alt="Side preview"
-								className="w-full h-full object-cover"
+								className="w-full h-full object-contain"
 							/>
 						) : (
 							<div className="text-center p-4">
@@ -193,11 +193,11 @@ export default function Instructions() {
 					</button>
 
 					<Link
-						href={'/orders/preview'}
+						href={'/orders/confirmation'}
 						className={`w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out ${
 							isNextDisabled
 								? 'bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed pointer-events-none'
-								: 'bg-black text-white border-black hover:bg-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg'
+								: 'bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg'
 						}`}
 						aria-disabled={isNextDisabled}
 						tabIndex={isNextDisabled ? -1 : 0}>
