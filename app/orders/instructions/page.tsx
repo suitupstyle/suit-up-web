@@ -7,7 +7,9 @@ import {
 	ArrowPathIcon,
 	CheckCircleIcon,
 	XCircleIcon,
+	ChevronLeftIcon,
 } from '@heroicons/react/24/outline'
+import BackButton from '@/app/ui/back-button'
 
 export default function Instructions() {
 	const [frontImage, setFrontImage] = useState<string | null>(null)
@@ -81,7 +83,8 @@ export default function Instructions() {
 	const isNextDisabled = !uploadSuccess
 
 	return (
-		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center">
+		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center relative">
+			<BackButton />
 			<header>
 				<h1 className="font-bold text-2xl mb-5">Instructions</h1>
 				<p className="font-normal text-sm">
@@ -92,28 +95,6 @@ export default function Instructions() {
 			</header>
 
 			<section className="w-full max-w-4xl mx-auto p-4">
-				{/* Status indicators */}
-				{isSubmitting && (
-					<div className="mb-4 p-3 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center gap-2">
-						<ArrowPathIcon className="w-5 h-5 animate-spin" />
-						<span>Uploading images, please wait...</span>
-					</div>
-				)}
-
-				{uploadSuccess && (
-					<div className="mb-4 p-3 bg-green-50 text-green-700 rounded-lg flex items-center justify-center gap-2">
-						<CheckCircleIcon className="w-5 h-5" />
-						<span>Images uploaded successfully!</span>
-					</div>
-				)}
-
-				{error && (
-					<div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg flex items-center justify-center gap-2">
-						<XCircleIcon className="w-5 h-5" />
-						<span>{error}</span>
-					</div>
-				)}
-
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 					{/* Front picture */}
 					<div className="relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden flex flex-col items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-blue-500 transition-colors">
@@ -164,6 +145,30 @@ export default function Instructions() {
 							</div>
 						)}
 					</div>
+				</div>
+
+				{/* Status indicators */}
+				<div className="h-12 mt-4 text-sm md:text-base">
+					{isSubmitting && (
+						<div className="p-3 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center gap-2">
+							<ArrowPathIcon className="w-5 h-5 animate-spin" />
+							<small>Uploading images, please wait...</small>
+						</div>
+					)}
+
+					{uploadSuccess && (
+						<div className="p-3 bg-green-50 text-green-700 rounded-lg flex items-center justify-center gap-2">
+							<CheckCircleIcon className="w-5 h-5" />
+							<small>Images uploaded successfully!</small>
+						</div>
+					)}
+
+					{error && (
+						<div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center justify-center gap-2">
+							<XCircleIcon className="w-5 h-5" />
+							<small>{error}</small>
+						</div>
+					)}
 				</div>
 			</section>
 
