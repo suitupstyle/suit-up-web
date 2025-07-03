@@ -18,6 +18,11 @@ const config: Config = {
           600: '#2F6FEB',
         },
       },
+      width: {
+        '458': '458px',
+        '720': '720px',
+        '856': '856px',
+      },
     },
     keyframes: {
       shimmer: {
