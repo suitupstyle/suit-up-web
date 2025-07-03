@@ -19,9 +19,11 @@ export default function Page() {
 						height={592}
 						priority
 					/>
-					<button className="w-full h-14 bg-white text-black rounded-lg transition-all ease-in-out hover:bg-gray-400 hover:tracking-wide">
-						Pre-Order Now
-					</button>
+					<Link
+						href={'/instructions'}
+						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-gray-400 hover:tracking-wide">
+						<span>Pre-Order Now</span>
+					</Link>
 					<button className="hidden lg:block absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg transition-colors ease-linear hover:bg-white hover:text-black">
 						Save My Style
 					</button>
