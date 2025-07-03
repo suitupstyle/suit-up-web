@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Page() {
   return (
@@ -9,9 +10,15 @@ export default function Page() {
 
         </header>
         <section className='flex flex-col items-center gap-2 relative'>
-          <img src="/home-suit.webp" alt="Default black suit." />
-          <button className='w-full h-14 bg-white text-black rounded-lg'>Pre-Order Now</button>
-          <button className='absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg'>Save My Style</button>
+          <Image src="/home-suit.webp"
+            alt="Default black suit."
+            className="w-full h-auto"
+            width={836}
+            height={532}
+            priority
+          />
+          <button className='w-full h-14 bg-white text-black rounded-lg transition-all ease-in-out hover:bg-gray-400 hover:tracking-wide'>Pre-Order Now</button>
+          <button className='absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg transition-colors ease-linear hover:bg-white hover:text-black'>Save My Style</button>
         </section>
         <footer>
           <div className='w-64 mx-auto text-sm text-gray-400 font-normal'>
