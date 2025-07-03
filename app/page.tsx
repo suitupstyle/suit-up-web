@@ -4,8 +4,8 @@ import Image from 'next/image'
 export default function Page() {
 	return (
 		<main className="w-full min-h-screen bg-black text-white">
-			<article className="w-64 md:w-458 lg:w-856 min-h-screen mx-auto flex flex-col justify-around items-center text-center">
-				<header className="">
+			<div className="w-64 md:w-458 lg:w-856 min-h-screen mx-auto flex flex-col justify-around items-center text-center">
+				<header>
 					<h1 className="font-bold text-2xl">
 						SuitUp - Dress for <br /> Success
 					</h1>
@@ -20,8 +20,8 @@ export default function Page() {
 						priority
 					/>
 					<Link
-						href={'/instructions'}
-						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-gray-400 hover:tracking-wide">
+						href={'/orders/instructions'}
+						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-gray-300 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
 						<span>Pre-Order Now</span>
 					</Link>
 					<button className="hidden lg:block absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg transition-colors ease-linear hover:bg-white hover:text-black">
@@ -41,7 +41,7 @@ export default function Page() {
 						</p>
 					</div>
 				</footer>
-			</article>
+			</div>
 		</main>
 	)
 }
