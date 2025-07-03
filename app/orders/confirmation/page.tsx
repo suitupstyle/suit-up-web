@@ -71,7 +71,7 @@ export default function Confirmation() {
 				</h1>
 			</header>
 
-			<section className="w-full">
+			<section className="w-full text-start text-sm lg:text-base">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 					<div className="relative aspect-[3/4] bg-gray-100 rounded-lg overflow-hidden border-2 border-gray-300">
 						{frontImage ? (
@@ -109,7 +109,7 @@ export default function Confirmation() {
 				{/* Measurements */}
 				<div className="bg-white rounded-lg shadow-md p-6">
 					<div className="flex justify-between items-center mb-4">
-						<h2 className="text-lg font-semibold">
+						<h2 className="md:text-lg font-semibold">
 							Body Measurements (cm)
 						</h2>
 						{!isEditing ? (
