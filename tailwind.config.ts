@@ -23,6 +23,10 @@ const config: Config = {
         '720': '720px',
         '856': '856px',
       },
+      backgroundImage: {
+        'radial-circle': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
+        'radial-ellipse': 'radial-gradient(ellipse at center, var(--tw-gradient-stops))',
+      }
     },
     keyframes: {
       shimmer: {
