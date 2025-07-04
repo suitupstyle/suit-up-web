@@ -268,7 +268,7 @@ export default function Confirmation() {
 			<footer className="w-full mt-8">
 				<div className="w-full flex justify-end">
 					<Link
-						href="/next-step"
+						href="/orders/details"
 						className="w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
 						Confirm and Continue
 					</Link>
