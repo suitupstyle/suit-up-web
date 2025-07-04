@@ -9,7 +9,7 @@ export default function OrdersLayout({
 		<>
 			<Navbar />
 			{/* min height is taking navbar height into account */}
-			<main className="w-full h-full bg-white text-black py-10">
+			<main className="w-full h-full bg-gradient-to-b from-white to-gray-200 text-black py-10">
 				{children}
 			</main>
 		</>
