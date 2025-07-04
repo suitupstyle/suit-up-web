@@ -26,12 +26,12 @@ const config: Config = {
       backgroundImage: {
         'radial-circle': 'radial-gradient(circle at center, var(--tw-gradient-stops))',
         'radial-ellipse': 'radial-gradient(ellipse at center, var(--tw-gradient-stops))',
-      }
-    },
-    keyframes: {
-      shimmer: {
-        '100%': {
-          transform: 'translateX(100%)',
+      },
+      keyframes: {
+        shimmer: {
+          '100%': {
+            transform: 'translateX(100%)',
+          },
         },
       },
     },
