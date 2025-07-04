@@ -14,6 +14,7 @@ import {
 import BackButton from '@/app/ui/back-button'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { logger } from '@/app/lib/logger'
 
 const signupSchema = z
 	.object({
@@ -51,7 +52,7 @@ export default function Details() {
 
 	const onSubmit = async (data: SignupFormData) => {
 		await new Promise((resolve) => setTimeout(resolve, 1500))
-		console.log('Form submitted:', data)
+		logger.log('Form submitted:', data)
 		router.push('/orders/payment')
 	}
 

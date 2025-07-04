@@ -14,6 +14,7 @@ import {
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import BackButton from '@/app/ui/back-button'
+import { logger } from '@/app/lib/logger'
 
 const paymentSchema = z
 	.object({
@@ -101,7 +102,7 @@ export default function Payment() {
 
 	const onSubmit = async (data: PaymentFormData) => {
 		await new Promise((resolve) => setTimeout(resolve, 1500))
-		console.log('Payment submitted:', data)
+		logger.log('Payment submitted:', data)
 		// Here you would normally call your payment API
 	}
 
