@@ -21,7 +21,7 @@ export default function Page() {
 					/>
 					<Link
 						href={'/orders/instructions'}
-						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-gray-300 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
+						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-radial-circle hover:from-gray-100 hover:to-gray-400 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
 						<span>Pre-Order Now</span>
 					</Link>
 					<button className="hidden lg:block absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg transition-colors ease-linear hover:bg-white hover:text-black">
