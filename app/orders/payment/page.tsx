@@ -412,7 +412,7 @@ export default function Payment() {
 							}`}>
 							{isSubmitting ? (
 								<>
-									<ArrowPathIcon className="animate-spin h-5 w-5 text-white" />
+									<ArrowPathIcon className="animate-spin h-5 w-5 text-gray-500" />
 									Processing...
 								</>
 							) : (
