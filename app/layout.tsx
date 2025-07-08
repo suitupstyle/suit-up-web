@@ -1,7 +1,5 @@
 import '@/app/ui/global.css'
-import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
+import { ReactQueryProviders } from './providers'
 
 export default function RootLayout({
 	children,
@@ -11,9 +9,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body>
-				<QueryClientProvider client={queryClient}>
-					{children}
-				</QueryClientProvider>
+				<ReactQueryProviders>{children}</ReactQueryProviders>
 			</body>
 		</html>
 	)
