@@ -34,5 +34,5 @@ export function validateUUID(value: unknown): UUID {
 }
 
 export type PreOrderPayload = {
-  itemsId: number[]
+  itemIds: number[]
 }

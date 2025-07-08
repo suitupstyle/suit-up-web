@@ -1,7 +1,4 @@
-import { logger } from "../logger";
-
 export const fetchClient = async (url: string, options?: RequestInit) => {
-  logger.log('ENV', process.env.NEXT_PUBLIC_API_URL)
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     headers: {
       'Content-Type': 'application/json',

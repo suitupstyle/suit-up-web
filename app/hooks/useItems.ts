@@ -11,7 +11,7 @@ export const useItems = () => {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery({
-    queryKey: ['projects'],
+    queryKey: ['items'],
     queryFn: ItemsService.getItems,
     getNextPageParam: (lastPage) => lastPage?.nextPage,
     initialPageParam: 1,

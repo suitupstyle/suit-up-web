@@ -10,10 +10,11 @@ import { OrdersService } from './services/orders.service'
 import { useItems } from './hooks/useItems'
 
 export default function Page() {
-	const [itemsId, setItemsId] = useState([1])
+	const [itemIds, setItemIds] = useState([1])
 	const router = useRouter()
 
 	const { items, isLoading, isError } = useItems()
+	logger.log('Items', items)
 
 	const { setId } = useOrderStore()
 
@@ -31,7 +32,7 @@ export default function Page() {
 	})
 
 	const onSubmit = () => {
-		createPost({ itemsId })
+		createPost({ itemIds })
 	}
 
 	return (
