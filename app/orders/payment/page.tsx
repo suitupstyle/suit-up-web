@@ -15,6 +15,8 @@ import {
 import Link from 'next/link'
 import BackButton from '@/app/ui/back-button'
 import { logger } from '@/app/lib/logger'
+import { useId } from 'react'
+import { useRouter } from 'next/navigation'
 
 const paymentSchema = z
 	.object({
@@ -97,6 +99,8 @@ export default function Payment() {
 			paymentMethod: 'stripe',
 		},
 	})
+	const router = useRouter()
+	const paymentFormId = useId()
 
 	const selectedMethod = watch('paymentMethod')
 
@@ -104,6 +108,7 @@ export default function Payment() {
 		await new Promise((resolve) => setTimeout(resolve, 1500))
 		logger.log('Payment submitted:', data)
 		// Here you would normally call your payment API
+		router.push('/orders/payment-confirmation')
 	}
 
 	// Mock order data
@@ -123,6 +128,7 @@ export default function Payment() {
 			<form
 				onSubmit={handleSubmit(onSubmit)}
 				className="w-full space-y-6"
+				id={paymentFormId}
 				noValidate>
 				{/* Payment Methods */}
 				<div className="space-y-3">
@@ -404,6 +410,7 @@ export default function Payment() {
 					<div className="w-full flex justify-center">
 						<button
 							type="submit"
+							form={paymentFormId}
 							disabled={isSubmitting}
 							className={`w-full max-w-md px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all ${
 								isSubmitting

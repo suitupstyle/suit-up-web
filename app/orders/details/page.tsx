@@ -13,7 +13,7 @@ import {
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useId } from 'react'
 import { logger } from '@/app/lib/logger'
 
 const signupSchema = z
@@ -49,6 +49,7 @@ export default function Details() {
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
 		useState(false)
+	const confirmationFormId = useId()
 
 	const onSubmit = async (data: SignupFormData) => {
 		await new Promise((resolve) => setTimeout(resolve, 1500))
@@ -66,6 +67,7 @@ export default function Details() {
 			<form
 				onSubmit={handleSubmit(onSubmit)}
 				className="w-full max-w-md space-y-4"
+				id={confirmationFormId}
 				noValidate>
 				{/* Full Name */}
 				<div className="w-full flex flex-col justify-start gap-1 text-start">
@@ -227,7 +229,8 @@ export default function Details() {
 			<footer className="w-full">
 				<div className="w-full flex justify-center">
 					<button
-						onClick={handleSubmit(onSubmit)}
+						type="submit"
+						form={confirmationFormId}
 						disabled={isSubmitting}
 						className={`w-full max-w-md px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all ${
 							isSubmitting
