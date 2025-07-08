@@ -9,14 +9,14 @@ import {
 	XCircleIcon,
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
-import { useImageStore } from '@/app/stores/imageStore'
+import { useOrderStore } from '@/app/stores/orderStore'
 
 export default function Instructions() {
 	const [isSubmitting, setIsSubmitting] = useState(false)
 	const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null)
 	const [error, setError] = useState<string | null>(null)
 	const { frontImage, setFrontImage, sideImage, setSideImage } =
-		useImageStore()
+		useOrderStore()
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
