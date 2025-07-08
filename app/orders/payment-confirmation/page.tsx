@@ -22,7 +22,6 @@ export default function OrderConfirmation() {
 			<section className="w-full max-w-lg mx-auto p-4">
 				<div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-						{/* Imagen del traje */}
 						<div className="bg-gray-100 aspect-square flex items-center justify-center rounded-md">
 							<img
 								src={suitImage}
@@ -31,7 +30,6 @@ export default function OrderConfirmation() {
 							/>
 						</div>
 
-						{/* Detalles de la orden */}
 						<div className="text-left space-y-3">
 							<h3 className="font-semibold text-lg">
 								Custom Business Professional Suit
