@@ -33,3 +33,6 @@ export function validateUUID(value: unknown): UUID {
   return uuidSchema.parse(value);
 }
 
+export type PreOrderPayload = {
+  itemsId: number[]
+}

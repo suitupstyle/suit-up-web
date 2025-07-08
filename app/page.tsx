@@ -1,79 +1,24 @@
 'use client'
 
 import Image from 'next/image'
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
-import { ItemsResponse } from './lib/definitions'
+import { useMutation } from '@tanstack/react-query'
 import { logger } from './lib/logger'
 import { useRouter } from 'next/navigation'
 import { useOrderStore } from './stores/orderStore'
 import { useState } from 'react'
-
-const fetchItems = async () => {
-	return await fetch(`http://localhost:3000/api/v1/items`)
-		.then(async (res) => {
-			if (!res.ok) throw new Error('Fetch suits request error.')
-			return res.json()
-		})
-		.then((res: ItemsResponse) => {
-			const page = Number(res.meta?.page)
-			const limit = Number(res.meta?.limit)
-			const total = Number(res.meta?.total)
-			if (isNaN(page) || isNaN(limit) || isNaN(total)) {
-				logger.error(
-					'Items API response Error',
-					new Error(
-						'Wrong format or missing information on API response'
-					),
-					{ res }
-				)
-			}
-
-			const totalPages = Math.ceil(total / limit)
-			const nextPage = page >= totalPages ? undefined : page + 1
-
-			return {
-				items: res.data,
-				nextPage,
-			}
-		})
-}
-
-const postItemOrder = async (data: any) => {
-	return await fetch(`http://localhost:3000/api/v1/preorders`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(data),
-	}).then(async (res) => {
-		if (!res.ok) throw new Error('Create new order request error.')
-		return res.json()
-	})
-}
+import { OrdersService } from './services/orders.service'
+import { useItems } from './hooks/useItems'
 
 export default function Page() {
 	const [itemsId, setItemsId] = useState([1])
 	const router = useRouter()
 
-	const {
-		data,
-		error,
-		fetchNextPage,
-		hasNextPage,
-		isFetchingNextPage,
-		status,
-	} = useInfiniteQuery({
-		queryKey: ['projects'],
-		queryFn: fetchItems,
-		getNextPageParam: (lastPage, allPages) => lastPage.nextPage,
-		initialPageParam: 1,
-	})
-
-	const items = data?.pages?.flatMap((page) => page.items)
-	logger.log('Items data', { suits: items, data })
+	const { items, isLoading, isError } = useItems()
 
 	const { setId } = useOrderStore()
 
 	const { mutate: createPost, isPending } = useMutation({
-		mutationFn: postItemOrder,
+		mutationFn: OrdersService.createOrder,
 		onSuccess: (data) => {
 			logger.log('Create data', data)
 			setId(data.id)
@@ -81,7 +26,7 @@ export default function Page() {
 		},
 		onError: (error) => {
 			logger.error('Error:', error)
-			alert('Hubo un error al crear el post')
+			alert('Post request error.')
 		},
 	})
 
