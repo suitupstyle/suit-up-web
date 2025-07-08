@@ -1,7 +1,94 @@
-import Link from 'next/link'
+'use client'
+
 import Image from 'next/image'
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import { ItemsResponse } from './lib/definitions'
+import { logger } from './lib/logger'
+import { useRouter } from 'next/navigation'
+import { useOrderStore } from './stores/orderStore'
+import { useState } from 'react'
+
+const fetchItems = async () => {
+	return await fetch(`http://localhost:3000/api/v1/items`)
+		.then(async (res) => {
+			if (!res.ok) throw new Error('Fetch suits request error.')
+			return res.json()
+		})
+		.then((res: ItemsResponse) => {
+			const page = Number(res.meta?.page)
+			const limit = Number(res.meta?.limit)
+			const total = Number(res.meta?.total)
+			if (isNaN(page) || isNaN(limit) || isNaN(total)) {
+				logger.error(
+					'Items API response Error',
+					new Error(
+						'Wrong format or missing information on API response'
+					),
+					{ res }
+				)
+			}
+
+			const totalPages = Math.ceil(total / limit)
+			const nextPage = page >= totalPages ? undefined : page + 1
+
+			return {
+				items: res.data,
+				nextPage,
+			}
+		})
+}
+
+const postItemOrder = async (data: any) => {
+	return await fetch(`http://localhost:3000/api/v1/preorders`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data),
+	}).then(async (res) => {
+		if (!res.ok) throw new Error('Create new order request error.')
+		return res.json()
+	})
+}
 
 export default function Page() {
+	const [itemsId, setItemsId] = useState([1])
+	const router = useRouter()
+
+	const {
+		data,
+		error,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+		status,
+	} = useInfiniteQuery({
+		queryKey: ['projects'],
+		queryFn: fetchItems,
+		getNextPageParam: (lastPage, allPages) => lastPage.nextPage,
+		initialPageParam: 1,
+	})
+
+	const items = data?.pages?.flatMap((page) => page.items)
+	logger.log('Items data', { suits: items, data })
+
+	const { setId } = useOrderStore()
+
+	const { mutate: createPost, isPending } = useMutation({
+		mutationFn: postItemOrder,
+		onSuccess: (data) => {
+			logger.log('Create data', data)
+			setId(data.id)
+			router.push(`/orders/instructions`)
+		},
+		onError: (error) => {
+			logger.error('Error:', error)
+			alert('Hubo un error al crear el post')
+		},
+	})
+
+	const onSubmit = () => {
+		createPost({ itemsId })
+	}
+
 	return (
 		<main className="w-full min-h-screen bg-black text-white">
 			<div className="w-64 md:w-458 lg:w-856 min-h-screen mx-auto flex flex-col justify-around items-center text-center">
@@ -19,11 +106,11 @@ export default function Page() {
 						height={592}
 						priority
 					/>
-					<Link
-						href={'/orders/instructions'}
+					<button
+						onPointerDown={onSubmit}
 						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-radial-circle hover:from-gray-100 hover:to-gray-400 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
 						<span>Pre-Order Now</span>
-					</Link>
+					</button>
 					<button className="hidden lg:block absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg transition-colors ease-linear hover:bg-white hover:text-black">
 						Save My Style
 					</button>
