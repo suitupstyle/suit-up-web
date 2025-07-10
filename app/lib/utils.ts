@@ -19,4 +19,6 @@ export const formatDateToLocal = (
   return formatter.format(date);
 };
 
-
+export const isBase64Image = (str: string): boolean => {
+  return /^data:image\/(png|jpeg|jpg|gif|webp);base64,/.test(str);
+}
