@@ -15,46 +15,41 @@ import BackButton from '@/app/ui/back-button'
 import { useRouter } from 'next/navigation'
 import { useState, useId } from 'react'
 import { logger } from '@/app/lib/logger'
-
-const signupSchema = z
-	.object({
-		fullName: z
-			.string()
-			.min(2, 'Name must be at least 2 characters')
-			.max(50, 'Name too long'),
-		email: z.string().email('Invalid email address'),
-		password: z
-			.string()
-			.min(8, 'Password must be at least 8 characters')
-			.regex(/[A-Z]/, 'Must contain at least one uppercase letter')
-			.regex(/[0-9]/, 'Must contain at least one number'),
-		confirmPassword: z.string(),
-	})
-	.refine((data) => data.password === data.confirmPassword, {
-		message: "Passwords don't match",
-		path: ['confirmPassword'],
-	})
-
-type SignupFormData = z.infer<typeof signupSchema>
+import {
+	DetailsFormData,
+	DetailsResponse,
+	detailsSchema,
+} from '@/app/lib/definitions'
+import { useMutation } from '@tanstack/react-query'
+import { OrdersService } from '@/app/services/orders.service'
 
 export default function Details() {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors, isSubmitting },
-	} = useForm<SignupFormData>({
-		resolver: zodResolver(signupSchema),
+	} = useForm<DetailsFormData>({
+		resolver: zodResolver(detailsSchema),
 	})
 	const router = useRouter()
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
 		useState(false)
-	const confirmationFormId = useId()
+	const detailsFormId = useId()
 
-	const onSubmit = async (data: SignupFormData) => {
-		await new Promise((resolve) => setTimeout(resolve, 1500))
-		logger.log('Form submitted:', data)
-		router.push('/orders/payment')
+	const { mutate: submitDetails, isError } = useMutation({
+		mutationFn: OrdersService.postUserDetails,
+		onSuccess: (data) => {
+			logger.log('Form submitted:', data as DetailsResponse)
+			router.push('/orders/payment')
+		},
+		onError: (error) => {
+			logger.error('User details error:', error)
+		},
+	})
+
+	const onSubmit = async (data: DetailsFormData) => {
+		submitDetails(data)
 	}
 
 	return (
@@ -67,7 +62,7 @@ export default function Details() {
 			<form
 				onSubmit={handleSubmit(onSubmit)}
 				className="w-full max-w-md space-y-4"
-				id={confirmationFormId}
+				id={detailsFormId}
 				noValidate>
 				{/* Full Name */}
 				<div className="w-full flex flex-col justify-start gap-1 text-start">
@@ -230,7 +225,7 @@ export default function Details() {
 				<div className="w-full flex justify-center">
 					<button
 						type="submit"
-						form={confirmationFormId}
+						form={detailsFormId}
 						disabled={isSubmitting}
 						className={`w-full max-w-md px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all ${
 							isSubmitting

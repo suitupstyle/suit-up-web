@@ -42,5 +42,8 @@ export const OrdersService = {
   },
   updateMeasurements: async (data: Measurements) => {
     return mutateMockMeasurements(data) // TODO: comment once endpoint is finished
+  },
+  postUserDetails: async (data: any) => {
+    return fetchMock('detailsResponse') // TODO: comment once endpoint is finished
   }
 };

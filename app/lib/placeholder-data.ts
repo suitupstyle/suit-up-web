@@ -1,4 +1,4 @@
-import { ImageUploadResponse, Items, ItemsResponse, Measurements, OrderResponse } from "./definitions";
+import { DetailsResponse, ImageUploadResponse, Items, ItemsResponse, Measurements, OrderResponse } from "./definitions";
 
 export const items: Items = {
   id: 1,
@@ -38,4 +38,8 @@ export const measurements: Measurements = {
   pantsLengthR: 130.96,
   calfBottom: 40.2,
   waistcoatBackLength: 51.39,
+}
+
+export const detailsResponse: DetailsResponse = {
+  status: 'ok'
 }
