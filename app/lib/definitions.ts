@@ -33,12 +33,16 @@ export type ItemsResponse = {
   }
 }
 
+export type PreOrderPayload = {
+  itemIds: number[]
+}
+
 export type OrderResponse = {
   id: UUID
 }
 
-export type PreOrderPayload = {
-  itemIds: number[]
+export type ImageUploadResponse = {
+  status: 'ok'
 }
 
 export type Measurements = {

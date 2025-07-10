@@ -1,15 +1,16 @@
 import { fetchClient, fetchMock, mutateMockMeasurements } from '../lib/api/client';
-import { Measurements, OrderResponse, type PreOrderPayload } from '../lib/definitions';
+import { type Measurements, type PreOrderPayload } from '../lib/definitions';
 import { UploadSchema } from '../lib/schemas';
 
 
 export const OrdersService = {
   createOrder: async (orderData: PreOrderPayload) => {
-    return fetchMock('createOrderResponse')
-    // return fetchClient('/preorders', {
-    //   method: 'POST',
-    //   body: JSON.stringify(orderData),
-    // });
+    return fetchMock('createOrderResponse') // TODO: comment once endpoint is finished
+
+    return fetchClient('/preorders', {
+      method: 'POST',
+      body: JSON.stringify(orderData),
+    });
   },
   uploadImages: async (images: { orderId: string, frontImage: string; sideImage: string }) => {
     const validated = UploadSchema.parse({
@@ -29,15 +30,17 @@ export const OrdersService = {
     formData.append('front', validated.frontImage.data);
     formData.append('side', validated.sideImage.data);
 
+    return fetchMock('uploadImagesResponse')  // TODO: comment once endpoint is finished
+
     return fetchClient(`/preorders/${images.orderId}/measure`, {
       method: 'POST',
       body: formData,
     })
   },
   getMeasurements: async () => {
-    return fetchMock('measurements')
+    return fetchMock('measurements') // TODO: comment once endpoint is finished
   },
   updateMeasurements: async (data: Measurements) => {
-    return mutateMockMeasurements(data)
+    return mutateMockMeasurements(data) // TODO: comment once endpoint is finished
   }
 };

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { UUID } from '../lib/definitions'
+import { type UUID } from '../lib/definitions'
 
 type OrderStore = {
   id: UUID | null

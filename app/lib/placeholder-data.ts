@@ -1,4 +1,4 @@
-import { Items, ItemsResponse, Measurements, OrderResponse } from "./definitions";
+import { ImageUploadResponse, Items, ItemsResponse, Measurements, OrderResponse } from "./definitions";
 
 export const items: Items = {
   id: 1,
@@ -17,6 +17,10 @@ export const itemsResponse: ItemsResponse = {
 
 export const createOrderResponse: OrderResponse = {
   id: crypto.randomUUID()
+}
+
+export const uploadImagesResponse: ImageUploadResponse = {
+  status: 'ok'
 }
 
 export const measurements: Measurements = {
