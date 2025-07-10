@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { useImageStore } from '@/app/stores/imageStore'
+import { useOrderStore } from '@/app/stores/orderStore'
 import BackButton from '@/app/ui/back-button'
 
 type Measurements = {
@@ -24,7 +24,7 @@ type Measurements = {
 }
 
 export default function Confirmation() {
-	const { frontImage, sideImage } = useImageStore()
+	const { frontImage, sideImage } = useOrderStore()
 
 	const [measurements, setMeasurements] = useState<Measurements>({
 		chest: 102.92,

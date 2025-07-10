@@ -9,43 +9,57 @@ import {
 	XCircleIcon,
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
-import { useImageStore } from '@/app/stores/imageStore'
+import { useOrderStore } from '@/app/stores/orderStore'
+import { useImageUpload } from '@/app/hooks/useImageUpload'
+import z from 'zod'
 
 export default function Instructions() {
-	const [isSubmitting, setIsSubmitting] = useState(false)
-	const [uploadSuccess, setUploadSuccess] = useState<boolean | null>(null)
 	const [error, setError] = useState<string | null>(null)
-	const { frontImage, setFrontImage, sideImage, setSideImage } =
-		useImageStore()
+	const { id, frontImage, setFrontImage, sideImage, setSideImage } =
+		useOrderStore()
+	const {
+		mutate,
+		isError,
+		error: apiError,
+		isSuccess,
+		isPending,
+	} = useImageUpload()
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
 		type: 'front' | 'side'
 	) => {
 		const file = e.target.files?.[0]
-		if (file) {
-			// Reset upload status when changing images
-			setUploadSuccess(null)
-			setError(null)
+		if (!file) return
 
-			// Validate image type and size
-			if (!file.type.startsWith('image/')) {
-				setError('Please upload a valid image file')
-				return
-			}
-
-			if (file.size > 5 * 1024 * 1024) {
-				// 5MB limit
-				setError('Image size should be less than 5MB')
-				return
-			}
+		try {
+			// Validación inicial con Zod
+			const validated = z
+				.object({
+					type: z.string().regex(/^image\/(jpeg|png|webp)/),
+					size: z.number().max(2 * 1024 * 1024),
+				})
+				.parse({
+					type: file.type,
+					size: file.size,
+				})
 
 			const reader = new FileReader()
 			reader.onload = (event) => {
 				const result = event.target?.result as string
+				// Validación Base64
+				if (!z.string().includes('base64').safeParse(result).success) {
+					throw new Error('Invalid Base64 encoding')
+				}
 				type === 'front' ? setFrontImage(result) : setSideImage(result)
 			}
 			reader.readAsDataURL(file)
+		} catch (err) {
+			if (err instanceof z.ZodError) {
+				setError(err.issues.map((i) => i.message).join(', '))
+			} else {
+				setError((err as Error).message)
+			}
 		}
 	}
 
@@ -55,32 +69,20 @@ export default function Instructions() {
 			return
 		}
 
-		setIsSubmitting(true)
-		setError(null)
-
-		try {
-			// Simulate API call with timeout
-			await new Promise((resolve, reject) => {
-				setTimeout(() => {
-					// Simulate random success/failure for testing
-					const success = Math.random() > 0.3
-					success
-						? resolve(true)
-						: reject(new Error('Upload failed. Please try again.'))
-				}, 2000)
-			})
-
-			setUploadSuccess(true)
-		} catch (err) {
-			setError(err instanceof Error ? err.message : 'Upload failed')
-			setUploadSuccess(false)
-		} finally {
-			setIsSubmitting(false)
-		}
+		mutate(
+			{ orderId: id ?? '', frontImage, sideImage },
+			{
+				onSuccess: () => {
+					// Manejo de éxito
+				},
+				onError: (err) => {
+					// Error ya manejado por Zod o API
+				},
+			}
+		)
 	}
 
 	const isUploadDisabled = !frontImage || !sideImage
-	const isNextDisabled = !uploadSuccess
 
 	return (
 		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center relative">
@@ -103,7 +105,7 @@ export default function Instructions() {
 							accept="image/*"
 							className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
 							onChange={(e) => handleImageUpload(e, 'front')}
-							disabled={isSubmitting}
+							disabled={isPending}
 						/>
 						{frontImage ? (
 							<img
@@ -128,7 +130,7 @@ export default function Instructions() {
 							accept="image/*"
 							className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
 							onChange={(e) => handleImageUpload(e, 'side')}
-							disabled={isSubmitting}
+							disabled={isPending}
 						/>
 						{sideImage ? (
 							<img
@@ -149,14 +151,14 @@ export default function Instructions() {
 
 				{/* Status indicators */}
 				<div className="h-12 mt-4 text-sm md:text-base">
-					{isSubmitting && (
+					{isPending && (
 						<div className="p-3 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center gap-2">
 							<ArrowPathIcon className="w-5 h-5 animate-spin" />
 							<small>Uploading images, please wait...</small>
 						</div>
 					)}
 
-					{uploadSuccess && (
+					{isSuccess && (
 						<div className="p-3 bg-green-50 text-green-700 rounded-lg flex items-center justify-center gap-2">
 							<CheckCircleIcon className="w-5 h-5" />
 							<small>Images uploaded successfully!</small>
@@ -176,13 +178,13 @@ export default function Instructions() {
 				<div className="w-full flex justify-between items-center gap-5">
 					<button
 						onClick={handleUpload}
-						disabled={isUploadDisabled || isSubmitting}
+						disabled={isUploadDisabled || isPending}
 						className={`w-full h-14 rounded-lg border-black border flex items-center justify-center gap-2 transition-colors ease-linear ${
-							isUploadDisabled || isSubmitting
+							isUploadDisabled || isPending
 								? 'bg-gray-200 text-gray-500 cursor-not-allowed'
 								: 'bg-white text-black hover:bg-black hover:text-white'
 						}`}>
-						{isSubmitting ? (
+						{isPending ? (
 							<>
 								<ArrowPathIcon className="w-5 h-5 animate-spin" />
 								<span>Uploading...</span>
@@ -195,12 +197,12 @@ export default function Instructions() {
 					<Link
 						href={'/orders/confirmation'}
 						className={`w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out ${
-							isNextDisabled
+							!isSuccess
 								? 'bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed pointer-events-none'
 								: 'bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg'
 						}`}
-						aria-disabled={isNextDisabled}
-						tabIndex={isNextDisabled ? -1 : 0}>
+						aria-disabled={!isSuccess}
+						tabIndex={!isSuccess ? -1 : 0}>
 						<span>Next</span>
 					</Link>
 				</div>
