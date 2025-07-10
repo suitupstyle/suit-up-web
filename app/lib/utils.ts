@@ -22,3 +22,15 @@ export const formatDateToLocal = (
 export const isBase64Image = (str: string): boolean => {
   return /^data:image\/(png|jpeg|jpg|gif|webp);base64,/.test(str);
 }
+
+export function promisifyWithDelay<T>(
+  value: T | (() => T),
+  delayMs: number = 0
+): Promise<T> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const result = typeof value === "function" ? (value as () => T)() : value;
+      resolve(result);
+    }, delayMs);
+  });
+}

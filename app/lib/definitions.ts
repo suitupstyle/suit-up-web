@@ -36,3 +36,20 @@ export function validateUUID(value: unknown): UUID {
 export type PreOrderPayload = {
   itemIds: number[]
 }
+
+export type Measurements = {
+  chest: number,
+  stomach: number,
+  seat: number,
+  sleeveLengthL: number,
+  sleeveLengthR: number,
+  backLength: number,
+  shoulder: number,
+  pantsWaist: number,
+  thigh: number,
+  uCrotch: number,
+  pantsLengthL: number,
+  pantsLengthR: number,
+  calfBottom: number,
+  waistcoatBackLength: number,
+}
