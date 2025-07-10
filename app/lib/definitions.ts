@@ -52,4 +52,5 @@ export type Measurements = {
   pantsLengthR: number,
   calfBottom: number,
   waistcoatBackLength: number,
+  [key: string]: number,
 }

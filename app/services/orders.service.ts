@@ -1,5 +1,5 @@
-import { fetchClient } from '../lib/api/client';
-import { type PreOrderPayload } from '../lib/definitions';
+import { fetchClient, fetchMock, mutateMockMeasurements } from '../lib/api/client';
+import { Measurements, type PreOrderPayload } from '../lib/definitions';
 import { UploadSchema } from '../lib/schemas';
 
 
@@ -32,5 +32,11 @@ export const OrdersService = {
       method: 'POST',
       body: formData,
     })
+  },
+  getMeasurements: async () => {
+    return fetchMock('measurements')
+  },
+  updateMeasurements: async (data: Measurements) => {
+    return mutateMockMeasurements(data)
   }
 };

@@ -15,4 +15,4 @@ export const measurements: Measurements = {
   pantsLengthR: 130.96,
   calfBottom: 40.2,
   waistcoatBackLength: 51.39,
-} as const
+}
