@@ -1,8 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
 import { OrdersService } from '../services/orders.service';
 
-export const useImageUpload = () => {
+export const useUploadImages = () => {
   return useMutation({
-    mutationFn: OrdersService.uploadImage,
+    mutationFn: OrdersService.uploadImages,
   });
 };

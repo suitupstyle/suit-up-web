@@ -10,7 +10,7 @@ export const OrdersService = {
       body: JSON.stringify(orderData),
     });
   },
-  uploadImage: async (images: { orderId: string, frontImage: string; sideImage: string }) => {
+  uploadImages: async (images: { orderId: string, frontImage: string; sideImage: string }) => {
     const validated = UploadSchema.parse({
       frontImage: {
         data: images.frontImage,

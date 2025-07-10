@@ -7,7 +7,7 @@ import { useOrderStore } from '@/app/stores/orderStore'
 import BackButton from '@/app/ui/back-button'
 import { useMeasurements } from '@/app/hooks/useMeasurements'
 import { type Measurements } from '@/app/lib/definitions'
-import { useMeasurementsUpdate } from '@/app/hooks/useMeasurementsUpdate'
+import { useMutateMeasurements } from '@/app/hooks/useMutateMeasurements'
 
 export default function Confirmation() {
 	const { frontImage, sideImage } = useOrderStore()
@@ -18,7 +18,7 @@ export default function Confirmation() {
 		isError: isUpdateError,
 		isPending,
 		isSuccess,
-	} = useMeasurementsUpdate()
+	} = useMutateMeasurements()
 
 	const [isEditing, setIsEditing] = useState(false)
 	const [tempMeasurements, setTempMeasurements] = useState<Measurements>(

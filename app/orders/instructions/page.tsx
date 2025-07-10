@@ -10,7 +10,7 @@ import {
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
 import { useOrderStore } from '@/app/stores/orderStore'
-import { useImageUpload } from '@/app/hooks/useImageUpload'
+import { useUploadImages } from '@/app/hooks/useUploadImages'
 import z from 'zod'
 
 export default function Instructions() {
@@ -23,7 +23,7 @@ export default function Instructions() {
 		error: apiError,
 		isSuccess,
 		isPending,
-	} = useImageUpload()
+	} = useUploadImages()
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
