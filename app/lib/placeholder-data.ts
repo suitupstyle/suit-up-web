@@ -1,4 +1,23 @@
-import { Measurements } from "./definitions";
+import { Items, ItemsResponse, Measurements, OrderResponse } from "./definitions";
+
+export const items: Items = {
+  id: 1,
+  name: 'Black Professional Business Suit',
+  desc: 'Description'
+}
+
+export const itemsResponse: ItemsResponse = {
+  data: [items],
+  meta: {
+    page: 1,
+    limit: 1,
+    total: 1,
+  }
+}
+
+export const createOrderResponse: OrderResponse = {
+  id: crypto.randomUUID()
+}
 
 export const measurements: Measurements = {
   chest: 102.92,

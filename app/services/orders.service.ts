@@ -1,14 +1,15 @@
 import { fetchClient, fetchMock, mutateMockMeasurements } from '../lib/api/client';
-import { Measurements, type PreOrderPayload } from '../lib/definitions';
+import { Measurements, OrderResponse, type PreOrderPayload } from '../lib/definitions';
 import { UploadSchema } from '../lib/schemas';
 
 
 export const OrdersService = {
   createOrder: async (orderData: PreOrderPayload) => {
-    return fetchClient('/preorders', {
-      method: 'POST',
-      body: JSON.stringify(orderData),
-    });
+    return fetchMock('createOrderResponse')
+    // return fetchClient('/preorders', {
+    //   method: 'POST',
+    //   body: JSON.stringify(orderData),
+    // });
   },
   uploadImages: async (images: { orderId: string, frontImage: string; sideImage: string }) => {
     const validated = UploadSchema.parse({
