@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
 import { OrdersService } from "../services/orders.service"
+import { Measurements } from "../lib/definitions"
 
 export const useMeasurements = () => {
   const {
@@ -14,7 +15,7 @@ export const useMeasurements = () => {
   })
 
   return {
-    measurements: data,
+    measurements: data as Measurements,
     isLoading,
     isError,
     error,

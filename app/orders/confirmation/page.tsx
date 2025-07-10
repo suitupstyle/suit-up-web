@@ -7,18 +7,23 @@ import { useOrderStore } from '@/app/stores/orderStore'
 import BackButton from '@/app/ui/back-button'
 import { useMeasurements } from '@/app/hooks/useMeasurements'
 import { type Measurements } from '@/app/lib/definitions'
-import { useUpdateMeasurements } from '@/app/hooks/useUpdateMeasurements'
+import { OrdersService } from '@/app/services/orders.service'
+import { useMutation } from '@tanstack/react-query'
 
 export default function Confirmation() {
 	const { frontImage, sideImage } = useOrderStore()
 
 	const { measurements, isLoading, isError } = useMeasurements()
 	const {
-		mutate: updateMeasurements,
+		mutate: mutateMeasurements,
 		isError: isUpdateError,
 		isPending,
 		isSuccess,
-	} = useUpdateMeasurements()
+	} = useMutation({
+		mutationFn: OrdersService.updateMeasurements,
+		onSuccess: () => {},
+		onError: () => {},
+	})
 
 	const [isEditing, setIsEditing] = useState(false)
 	const [tempMeasurements, setTempMeasurements] = useState<Measurements>(
@@ -36,7 +41,7 @@ export default function Confirmation() {
 	}
 
 	const saveMeasurements = () => {
-		updateMeasurements(tempMeasurements)
+		mutateMeasurements(tempMeasurements)
 		setIsEditing(false)
 	}
 
