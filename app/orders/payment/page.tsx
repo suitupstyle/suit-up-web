@@ -2,7 +2,6 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import {
 	CreditCardIcon,
 	LockClosedIcon,
@@ -12,80 +11,18 @@ import {
 	BuildingOfficeIcon,
 	ArrowPathIcon,
 } from '@heroicons/react/24/outline'
-import Link from 'next/link'
 import BackButton from '@/app/ui/back-button'
 import { logger } from '@/app/lib/logger'
 import { useId } from 'react'
 import { useRouter } from 'next/navigation'
-
-const paymentSchema = z
-	.object({
-		paymentMethod: z.enum(['stripe', 'paypal', 'alipay', 'applepay']),
-		cardHolderName: z
-			.string()
-			.min(2, 'Name must be at least 2 characters')
-			.optional(),
-		email: z.string().email('Invalid email address').optional(),
-		expirationDate: z
-			.string()
-			.regex(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, 'Invalid expiration date')
-			.optional(),
-		cvv: z
-			.string()
-			.min(3, 'CVV must be at least 3 digits')
-			.max(4, 'CVV too long')
-			.optional(),
-		streetAddress: z.string().min(5, 'Address too short').optional(),
-		city: z.string().min(2, 'City name too short').optional(),
-	})
-	.superRefine((data, ctx) => {
-		if (data.paymentMethod === 'stripe') {
-			if (!data.cardHolderName) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: 'Card holder name is required',
-					path: ['cardHolderName'],
-				})
-			}
-			if (!data.email) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: 'Email is required',
-					path: ['email'],
-				})
-			}
-			if (!data.expirationDate) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: 'Expiration date is required',
-					path: ['expirationDate'],
-				})
-			}
-			if (!data.cvv) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: 'CVV is required',
-					path: ['cvv'],
-				})
-			}
-			if (!data.streetAddress) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: 'Street address is required',
-					path: ['streetAddress'],
-				})
-			}
-			if (!data.city) {
-				ctx.addIssue({
-					code: z.ZodIssueCode.custom,
-					message: 'City is required',
-					path: ['city'],
-				})
-			}
-		}
-	})
-
-type PaymentFormData = z.infer<typeof paymentSchema>
+import {
+	PaymentFormData,
+	PaymentResponse,
+	paymentSchema,
+} from '@/app/lib/definitions'
+import { useOrderCost } from '@/app/hooks/useOrderCost'
+import { useMutation } from '@tanstack/react-query'
+import { OrdersService } from '@/app/services/orders.service'
 
 export default function Payment() {
 	const {
@@ -104,17 +41,25 @@ export default function Payment() {
 
 	const selectedMethod = watch('paymentMethod')
 
-	const onSubmit = async (data: PaymentFormData) => {
-		await new Promise((resolve) => setTimeout(resolve, 1500))
-		logger.log('Payment submitted:', data)
-		// Here you would normally call your payment API
-		router.push('/orders/payment-confirmation')
-	}
+	const { data, isLoading, isError } = useOrderCost()
+	const subtotal = Number(data?.cost ?? 0)
+	const taxes = subtotal * Number(data?.taxRate ?? 0)
+	const total = subtotal + taxes
 
-	// Mock order data
-	const subtotal = 599.99
-	const taxes = (subtotal * 0.08).toFixed(2)
-	const total = (subtotal + parseFloat(taxes)).toFixed(2)
+	const { mutate: submitPayment, isError: isPaymentError } = useMutation({
+		mutationFn: OrdersService.postPayment,
+		onSuccess: (data) => {
+			logger.log('Payment submitted:', data as PaymentResponse)
+			router.push('/orders/payment-confirmation')
+		},
+		onError: (error) => {
+			logger.error('Payment error', error)
+		},
+	})
+
+	const onSubmit = async (data: PaymentFormData) => {
+		submitPayment(data)
+	}
 
 	return (
 		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center relative">
@@ -398,11 +343,11 @@ export default function Payment() {
 					</div>
 					<div className="flex justify-center gap-2">
 						<span className="font-bold">Taxes:</span>
-						<span>${taxes}</span>
+						<span>${taxes.toFixed(2)}</span>
 					</div>
 					<div className="flex justify-center gap-2 font-black text-lg border-t border-gray-300 mt-2">
 						<span>Total:</span>
-						<span>${total}</span>
+						<span>${total.toFixed(2)}</span>
 					</div>
 				</div>
 

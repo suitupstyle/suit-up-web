@@ -1,12 +1,13 @@
-import { fetchClient } from "../lib/api/client";
+import { fetchMock } from "../lib/api/client";
 import { handleApiError } from "../lib/api/errorHandler";
-import { ItemsResponse } from "../lib/definitions";
+import { type ItemsResponse } from "../lib/definitions";
 
 
 export const ItemsService = {
   getItems: async () => {
     try {
-      const res = await fetchClient('/items') as ItemsResponse;
+      const res = await fetchMock('itemsResponse') as ItemsResponse // TODO: comment out once endpoint is working
+      // const res = await fetchClient('/items') as ItemsResponse;  // TODO: uncomment once endpoint is working
 
       const page = Number(res.meta?.page);
       const limit = Number(res.meta?.limit);

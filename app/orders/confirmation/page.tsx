@@ -5,47 +5,30 @@ import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { useOrderStore } from '@/app/stores/orderStore'
 import BackButton from '@/app/ui/back-button'
-
-type Measurements = {
-	chest: number
-	stomach: number
-	seat: number
-	sleeveLengthL: number
-	sleeveLengthR: number
-	backLength: number
-	shoulder: number
-	pantsWaist: number
-	thigh: number
-	uCrotch: number
-	pantsLengthL: number
-	pantsLengthR: number
-	calfBottom: number
-	waistcoatBackLength: number
-}
+import { useMeasurements } from '@/app/hooks/useMeasurements'
+import { type Measurements } from '@/app/lib/definitions'
+import { OrdersService } from '@/app/services/orders.service'
+import { useMutation } from '@tanstack/react-query'
 
 export default function Confirmation() {
 	const { frontImage, sideImage } = useOrderStore()
 
-	const [measurements, setMeasurements] = useState<Measurements>({
-		chest: 102.92,
-		stomach: 86.78,
-		seat: 102.19,
-		sleeveLengthL: 69.86,
-		sleeveLengthR: 69.86,
-		backLength: 51.39,
-		shoulder: 46.01,
-		pantsWaist: 79.64,
-		thigh: 62.43,
-		uCrotch: 35.11,
-		pantsLengthL: 130.96,
-		pantsLengthR: 130.96,
-		calfBottom: 40.2,
-		waistcoatBackLength: 51.39,
+	const { measurements, isLoading, isError } = useMeasurements()
+	const {
+		mutate: mutateMeasurements,
+		isError: isUpdateError,
+		isPending,
+		isSuccess,
+	} = useMutation({
+		mutationFn: OrdersService.updateMeasurements,
+		onSuccess: () => {},
+		onError: () => {},
 	})
 
 	const [isEditing, setIsEditing] = useState(false)
-	const [tempMeasurements, setTempMeasurements] =
-		useState<Measurements>(measurements)
+	const [tempMeasurements, setTempMeasurements] = useState<Measurements>(
+		measurements as Measurements
+	)
 
 	const handleMeasurementChange = (
 		field: keyof Measurements,
@@ -58,7 +41,7 @@ export default function Confirmation() {
 	}
 
 	const saveMeasurements = () => {
-		setMeasurements(tempMeasurements)
+		mutateMeasurements(tempMeasurements)
 		setIsEditing(false)
 	}
 
@@ -115,7 +98,9 @@ export default function Confirmation() {
 						{!isEditing ? (
 							<button
 								onClick={() => {
-									setTempMeasurements(measurements)
+									setTempMeasurements(
+										measurements as Measurements
+									)
 									setIsEditing(true)
 								}}
 								className="text-blue-600 hover:text-blue-800">
@@ -139,7 +124,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.chest
-										: measurements.chest
+										: measurements?.chest ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -151,7 +136,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.stomach
-										: measurements.stomach
+										: measurements?.stomach ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -163,7 +148,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.seat
-										: measurements.seat
+										: measurements?.seat ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -175,7 +160,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.shoulder
-										: measurements.shoulder
+										: measurements?.shoulder ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -187,7 +172,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.backLength
-										: measurements.backLength
+										: measurements?.backLength ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -202,7 +187,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.sleeveLengthL
-										: measurements.sleeveLengthL
+										: measurements?.sleeveLengthL ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -214,7 +199,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.sleeveLengthR
-										: measurements.sleeveLengthR
+										: measurements?.sleeveLengthR ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -226,7 +211,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.pantsWaist
-										: measurements.pantsWaist
+										: measurements?.pantsWaist ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -238,7 +223,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.thigh
-										: measurements.thigh
+										: measurements?.thigh ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -250,7 +235,7 @@ export default function Confirmation() {
 								value={
 									isEditing
 										? tempMeasurements.waistcoatBackLength
-										: measurements.waistcoatBackLength
+										: measurements?.waistcoatBackLength ?? 0
 								}
 								editing={isEditing}
 								onChange={(v) =>
@@ -269,7 +254,10 @@ export default function Confirmation() {
 				<div className="w-full flex justify-end">
 					<Link
 						href="/orders/details"
-						className="w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
+						className="w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg"
+						aria-disabled={
+							isEditing || isPending || (!isPending && !isSuccess)
+						}>
 						Confirm and Continue
 					</Link>
 				</div>

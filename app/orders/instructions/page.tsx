@@ -10,20 +10,24 @@ import {
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
 import { useOrderStore } from '@/app/stores/orderStore'
-import { useImageUpload } from '@/app/hooks/useImageUpload'
 import z from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { OrdersService } from '@/app/services/orders.service'
 
 export default function Instructions() {
 	const [error, setError] = useState<string | null>(null)
 	const { id, frontImage, setFrontImage, sideImage, setSideImage } =
 		useOrderStore()
+
 	const {
 		mutate,
 		isError,
 		error: apiError,
 		isSuccess,
 		isPending,
-	} = useImageUpload()
+	} = useMutation({
+		mutationFn: OrdersService.uploadImages,
+	})
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -33,7 +37,6 @@ export default function Instructions() {
 		if (!file) return
 
 		try {
-			// Validación inicial con Zod
 			const validated = z
 				.object({
 					type: z.string().regex(/^image\/(jpeg|png|webp)/),
@@ -47,7 +50,6 @@ export default function Instructions() {
 			const reader = new FileReader()
 			reader.onload = (event) => {
 				const result = event.target?.result as string
-				// Validación Base64
 				if (!z.string().includes('base64').safeParse(result).success) {
 					throw new Error('Invalid Base64 encoding')
 				}

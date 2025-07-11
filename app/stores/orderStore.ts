@@ -1,11 +1,11 @@
 import { create } from 'zustand'
-import { UUID } from '../lib/definitions'
+import { type UUID } from '../lib/definitions'
 
 type OrderStore = {
   id: UUID | null
   frontImage: string | null
   sideImage: string | null
-  setId: (id: UUID) => void
+  setOrderId: (id: UUID) => void
   setFrontImage: (img: string | null) => void
   setSideImage: (img: string | null) => void
   clearImages: () => void
@@ -16,7 +16,7 @@ export const useOrderStore = create<OrderStore>((set) => ({
   id: null,
   frontImage: null,
   sideImage: null,
-  setId: (id) => set({ id }),
+  setOrderId: (id) => set({ id }),
   setFrontImage: (frontImage) => set({ frontImage }),
   setSideImage: (sideImage) => set({ sideImage }),
   clearImages: () => set({ frontImage: null, sideImage: null }),
