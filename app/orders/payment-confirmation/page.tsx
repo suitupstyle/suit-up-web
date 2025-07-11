@@ -2,9 +2,17 @@
 
 import Link from 'next/link'
 import { ArrowLeftIcon, ShareIcon } from '@heroicons/react/24/outline'
+import { usePaymentConfirmation } from '@/app/hooks/usePaymentConfirmation'
+import { logger } from '@/app/lib/logger'
 
 export default function OrderConfirmation() {
-	const suitImage = '/home-suit.webp'
+	const { data, isError, isLoading } = usePaymentConfirmation()
+	logger.log('payment confirmation', data)
+	const orderId = data?.orderId
+	const amountPayed = data?.amountPayed
+	const measurementStatus = data?.measurementStatus
+	const itemName = data?.items?.[0]?.name
+	const suitImage = data?.items?.[0]?.imageUrl
 
 	return (
 		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center">
@@ -19,10 +27,10 @@ export default function OrderConfirmation() {
 				</p>
 			</header>
 
-			<section className="w-full max-w-lg mx-auto p-4">
+			<section className="w-full max-w-2xl mx-auto p-4">
 				<div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-						<div className="bg-gray-100 aspect-square flex items-center justify-center rounded-md">
+						<div className="bg-gray-100 aspect-square flex items-center justify-center rounded-md my-auto">
 							<img
 								src={suitImage}
 								alt="Suit Preview"
@@ -31,27 +39,32 @@ export default function OrderConfirmation() {
 						</div>
 
 						<div className="text-left space-y-3">
-							<h3 className="font-semibold text-lg">
-								Custom Business Professional Suit
+							<h3 className="font-bold text-xl antialiased">
+								{itemName}
 							</h3>
-							<div className="text-sm">
-								<p>
+							<div className="text-sm flex flex-col gap-2">
+								<div className="w-full flex flex-col justify-start items-start gap-1">
 									<span className="text-gray-600">
 										Order ID:
-									</span>{' '}
-									325234
-								</p>
-								<p>
+									</span>
+									<span>{orderId}</span>
+								</div>
+								<div className="w-full flex flex-col justify-start items-start gap-1">
 									<span className="text-gray-600">
 										Amount Paid:
-									</span>{' '}
-									$165
-								</p>
-								<p>
+									</span>
+									<span>${amountPayed?.toFixed(2)}</span>
+								</div>
+								<div className="w-full flex flex-col justify-start items-start gap-1">
 									<span className="text-gray-600">
 										Measurement Status:
-									</span>{' '}
-									<span className="text-green-600 font-medium">
+									</span>
+									<span className="capitalize">
+										{measurementStatus}
+									</span>
+								</div>
+								<p>
+									<span className="text-green-600 font-semibold text-base">
 										Successfully Submitted
 									</span>
 								</p>

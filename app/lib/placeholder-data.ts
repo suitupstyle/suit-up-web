@@ -1,9 +1,10 @@
-import { DetailsResponse, ImageUploadResponse, Items, ItemsResponse, Measurements, OrderResponse } from "./definitions";
+import { DetailsResponse, ImageUploadResponse, Items, ItemsResponse, Measurements, OrderCost, OrderResponse, PaymentConfirmation, PaymentResponse } from "./definitions";
 
 export const items: Items = {
   id: 1,
   name: 'Black Professional Business Suit',
-  desc: 'Description'
+  desc: 'Description',
+  imageUrl: '/home-suit.webp'
 }
 
 export const itemsResponse: ItemsResponse = {
@@ -42,4 +43,20 @@ export const measurements: Measurements = {
 
 export const detailsResponse: DetailsResponse = {
   status: 'ok'
+}
+
+export const orderCost: OrderCost = {
+  cost: 900,
+  taxRate: 0.08,
+}
+
+export const paymentResponse: PaymentResponse = {
+  status: 'ok'
+}
+
+export const paymentConfirmation: PaymentConfirmation = {
+  orderId: crypto.randomUUID(),
+  items: [items],
+  amountPayed: 972,
+  measurementStatus: 'success',
 }
