@@ -1,4 +1,28 @@
-import { Measurements } from "./definitions";
+import { DetailsResponse, ImageUploadResponse, Items, ItemsResponse, Measurements, OrderCost, OrderResponse, PaymentConfirmation, PaymentResponse } from "./definitions";
+
+export const items: Items = {
+  id: 1,
+  name: 'Black Professional Business Suit',
+  desc: 'Description',
+  imageUrl: '/home-suit.webp'
+}
+
+export const itemsResponse: ItemsResponse = {
+  data: [items],
+  meta: {
+    page: 1,
+    limit: 1,
+    total: 1,
+  }
+}
+
+export const createOrderResponse: OrderResponse = {
+  id: crypto.randomUUID()
+}
+
+export const uploadImagesResponse: ImageUploadResponse = {
+  status: 'ok'
+}
 
 export const measurements: Measurements = {
   chest: 102.92,
@@ -15,4 +39,24 @@ export const measurements: Measurements = {
   pantsLengthR: 130.96,
   calfBottom: 40.2,
   waistcoatBackLength: 51.39,
-} as const
+}
+
+export const detailsResponse: DetailsResponse = {
+  status: 'ok'
+}
+
+export const orderCost: OrderCost = {
+  cost: 900,
+  taxRate: 0.08,
+}
+
+export const paymentResponse: PaymentResponse = {
+  status: 'ok'
+}
+
+export const paymentConfirmation: PaymentConfirmation = {
+  orderId: crypto.randomUUID(),
+  items: [items],
+  amountPayed: 972,
+  measurementStatus: 'success',
+}

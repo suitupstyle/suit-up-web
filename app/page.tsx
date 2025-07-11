@@ -8,21 +8,21 @@ import { useOrderStore } from './stores/orderStore'
 import { useState } from 'react'
 import { OrdersService } from './services/orders.service'
 import { useItems } from './hooks/useItems'
+import { OrderResponse } from './lib/definitions'
 
 export default function Page() {
 	const [itemIds, setItemIds] = useState([1])
 	const router = useRouter()
 
 	const { items, isLoading, isError } = useItems()
-	logger.log('Items', items)
 
-	const { setId } = useOrderStore()
+	const { setOrderId } = useOrderStore()
 
 	const { mutate: createPost, isPending } = useMutation({
 		mutationFn: OrdersService.createOrder,
 		onSuccess: (data) => {
 			logger.log('Create data', data)
-			setId(data.id)
+			setOrderId((data as OrderResponse).id)
 			router.push(`/orders/instructions`)
 		},
 		onError: (error) => {
