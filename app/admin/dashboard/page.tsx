@@ -1,12 +1,9 @@
+// app/admin/dashboard/page.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
-import {
-	ArrowDownCircleIcon,
-	ArrowPathIcon,
-	PlusIcon,
-} from '@heroicons/react/24/outline'
-import Link from 'next/link'
+import { ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
+import { useUIStore } from '../../stores/uiStore'
 import { useRouter } from 'next/navigation'
 
 // Interfaz para las órdenes
@@ -136,8 +133,8 @@ export default function DashboardPage() {
 	}
 
 	return (
-		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col">
-			<header className="w-full py-6">
+		<div className="flex-1 flex flex-col">
+			<header className="py-6">
 				<h1 className="font-bold text-2xl mb-2">Order Dashboard</h1>
 				<p className="font-normal text-sm text-gray-600">
 					Manage and track all your orders in one place
@@ -172,131 +169,161 @@ export default function DashboardPage() {
 							onClick={exportToCSV}
 							disabled={orders.length === 0}
 							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white text-sm hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-							<ArrowDownCircleIcon className="w-4 h-4" />
+							<ArrowDownTrayIcon className="w-4 h-4" />
 							Export CSV
 						</button>
-
-						<Link
-							href="/orders/new"
-							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700">
-							<PlusIcon className="w-4 h-4" />
-							New Order
-						</Link>
 					</div>
 				</div>
 
-				{/* Tabla de órdenes */}
-				<div className="bg-white rounded-lg shadow overflow-hidden border border-gray-200 flex-1">
-					{loading ? (
-						<div className="flex items-center justify-center h-full p-8">
-							<div className="text-center">
-								<ArrowPathIcon className="w-10 h-10 mx-auto text-gray-400 animate-spin" />
-								<p className="mt-4 text-gray-600">
-									Loading orders...
-								</p>
+				{/* Contenido: Tabla (desktop/tablet) o Cards (mobile) */}
+				{loading ? (
+					<div className="flex items-center justify-center h-full p-8">
+						<div className="text-center">
+							<ArrowPathIcon className="w-10 h-10 mx-auto text-gray-400 animate-spin" />
+							<p className="mt-4 text-gray-600">
+								Loading orders...
+							</p>
+						</div>
+					</div>
+				) : error ? (
+					<div className="flex items-center justify-center h-full p-8">
+						<div className="text-center">
+							<div className="bg-red-50 text-red-600 p-4 rounded-lg max-w-md">
+								<p>{error}</p>
+								<button
+									onClick={() => router.refresh()}
+									className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200">
+									Try Again
+								</button>
 							</div>
 						</div>
-					) : error ? (
-						<div className="flex items-center justify-center h-full p-8">
-							<div className="text-center">
-								<div className="bg-red-50 text-red-600 p-4 rounded-lg max-w-md">
-									<p>{error}</p>
-									<button
-										onClick={() => router.refresh()}
-										className="mt-4 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200">
-										Try Again
-									</button>
-								</div>
-							</div>
-						</div>
-					) : (
-						<div className="overflow-x-auto">
-							<table className="min-w-full divide-y divide-gray-200">
-								<thead className="bg-gray-50">
-									<tr>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											ID
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Customer
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Product
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Amount
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Status
-										</th>
-										<th
-											scope="col"
-											className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-											Date
-										</th>
-									</tr>
-								</thead>
-								<tbody className="bg-white divide-y divide-gray-200">
-									{orders.map((order) => (
-										<tr
-											key={order.id}
-											className="hover:bg-gray-50 cursor-pointer"
-											onClick={() =>
-												router.push(
-													`/orders/${order.id}`
-												)
-											}>
-											<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-												{order.id}
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-												{order.customer}
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-												{order.product}
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-												${order.amount.toFixed(2)}
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap text-sm">
-												{getStatusBadge(order.status)}
-											</td>
-											<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-												{order.date}
-											</td>
+					</div>
+				) : (
+					<>
+						{/* Vista de escritorio/tablet (tabla) */}
+						<div className="hidden md:block bg-white rounded-lg shadow overflow-hidden border border-gray-200 flex-1">
+							<div className="overflow-x-auto">
+								<table className="min-w-full divide-y divide-gray-200">
+									<thead className="bg-gray-50">
+										<tr>
+											<th
+												scope="col"
+												className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												ID
+											</th>
+											<th
+												scope="col"
+												className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Customer
+											</th>
+											<th
+												scope="col"
+												className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Product
+											</th>
+											<th
+												scope="col"
+												className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Amount
+											</th>
+											<th
+												scope="col"
+												className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Status
+											</th>
+											<th
+												scope="col"
+												className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+												Date
+											</th>
 										</tr>
-									))}
-								</tbody>
-							</table>
-
-							{orders.length === 0 && !loading && (
-								<div className="text-center py-12">
-									<p className="text-gray-500">
-										No orders found
-									</p>
-									<Link
-										href="/orders/new"
-										className="mt-4 inline-block text-blue-600 hover:underline">
-										Create your first order
-									</Link>
-								</div>
-							)}
+									</thead>
+									<tbody className="bg-white divide-y divide-gray-200">
+										{orders.map((order) => (
+											<tr
+												key={order.id}
+												className="hover:bg-gray-50 cursor-pointer"
+												onClick={() =>
+													router.push(
+														`/admin/orders/${order.id}`
+													)
+												}>
+												<td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+													{order.id}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+													{order.customer}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+													{order.product}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+													${order.amount.toFixed(2)}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-sm">
+													{getStatusBadge(
+														order.status
+													)}
+												</td>
+												<td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+													{order.date}
+												</td>
+											</tr>
+										))}
+									</tbody>
+								</table>
+							</div>
 						</div>
-					)}
-				</div>
+
+						{/* Vista móvil (cards) */}
+						<div className="md:hidden space-y-4">
+							{orders.map((order) => (
+								<div
+									key={order.id}
+									className="bg-white rounded-lg shadow border border-gray-200 p-4"
+									onClick={() =>
+										router.push(`/admin/orders/${order.id}`)
+									}>
+									<div className="flex justify-between items-start">
+										<div>
+											<h3 className="font-medium text-gray-900">
+												{order.id}
+											</h3>
+											<p className="text-gray-500">
+												{order.customer}
+											</p>
+										</div>
+										<div>
+											{getStatusBadge(order.status)}
+										</div>
+									</div>
+
+									<div className="mt-3">
+										<p className="text-sm font-medium">
+											{order.product}
+										</p>
+										<p className="text-sm text-gray-500">
+											${order.amount.toFixed(2)}
+										</p>
+									</div>
+
+									<div className="mt-2 text-sm text-gray-500">
+										{order.date}
+									</div>
+								</div>
+							))}
+						</div>
+					</>
+				)}
+
+				{!loading && orders.length === 0 && (
+					<div className="text-center py-12">
+						<p className="text-gray-500">No orders found</p>
+					</div>
+				)}
 			</div>
 
-			<footer className="w-full py-6">
+			<footer className="py-6">
 				<div className="text-sm text-gray-600">
 					Last updated: {new Date().toLocaleDateString()} at{' '}
 					{new Date().toLocaleTimeString([], {
