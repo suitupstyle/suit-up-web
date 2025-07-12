@@ -180,3 +180,21 @@ export const loginSchema = z.object({
 })
 
 export type LoginFormData = z.infer<typeof loginSchema>
+
+export type Order = {
+  id: string
+  customer: string
+  product: string
+  amount: number
+  status: 'pending' | 'processing' | 'shipped' | 'delivered'
+  date: string
+}
+
+export type OrderListResponse = {
+  data: Order[],
+  meta: {
+    page: number,
+    limit: number,
+    total: number
+  }
+}

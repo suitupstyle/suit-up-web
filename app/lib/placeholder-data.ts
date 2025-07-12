@@ -1,4 +1,4 @@
-import { DetailsResponse, ImageUploadResponse, Items, ItemsResponse, Measurements, OrderCost, OrderResponse, PaymentConfirmation, PaymentResponse } from "./definitions";
+import { DetailsResponse, ImageUploadResponse, Items, ItemsResponse, Measurements, Order, OrderCost, OrderResponse, OrderListResponse, PaymentConfirmation, PaymentResponse } from "./definitions";
 
 export const items: Items = {
   id: 1,
@@ -59,4 +59,56 @@ export const paymentConfirmation: PaymentConfirmation = {
   items: [items],
   amountPayed: 972,
   measurementStatus: 'success',
+}
+
+export const orders: Order[] = [
+  {
+    id: 'ORD-001',
+    customer: 'John Smith',
+    product: 'Custom Business Suit',
+    amount: 165,
+    status: 'processing',
+    date: '2023-06-15',
+  },
+  {
+    id: 'ORD-002',
+    customer: 'Emma Johnson',
+    product: 'Premium Tuxedo',
+    amount: 220,
+    status: 'shipped',
+    date: '2023-06-18',
+  },
+  {
+    id: 'ORD-003',
+    customer: 'Michael Brown',
+    product: 'Casual Blazer',
+    amount: 135,
+    status: 'delivered',
+    date: '2023-06-10',
+  },
+  {
+    id: 'ORD-004',
+    customer: 'Sarah Davis',
+    product: 'Executive Suit',
+    amount: 195,
+    status: 'pending',
+    date: '2023-06-20',
+  },
+  {
+    id: 'ORD-005',
+    customer: 'Robert Wilson',
+    product: 'Wedding Suit',
+    amount: 250,
+    status: 'processing',
+    date: '2023-06-22',
+  },
+]
+
+export const ordersResponse: OrderListResponse = {
+  data: orders,
+  meta: {
+    page: 1,
+    limit: 1,
+    total: 1,
+  }
 }
