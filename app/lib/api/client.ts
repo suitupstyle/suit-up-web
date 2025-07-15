@@ -1,5 +1,5 @@
 import { type Measurements } from "../definitions";
-import { createOrderResponse, detailsResponse, items, itemsResponse, measurements, orderCost, paymentConfirmation, paymentResponse, uploadImagesResponse } from "../placeholder-data";
+import { createOrderResponse, detailsResponse, items, itemsResponse, measurements, orderCost, orders, ordersResponse, paymentConfirmation, paymentResponse, uploadImagesResponse } from "../placeholder-data";
 import { promisifyWithDelay } from "../utils";
 
 export const fetchClient = async (url: string, options?: RequestInit) => {
@@ -29,12 +29,14 @@ const mocksData = {
   orderCost,
   paymentResponse,
   paymentConfirmation,
+  orders,
+  ordersResponse,
 }
 
 type mockData = keyof typeof mocksData
 
 export const fetchMock = async (data: mockData) => {
-  return promisifyWithDelay(mocksData[data], 150)
+  return promisifyWithDelay(mocksData[data], 500)
 }
 
 export const mutateMockMeasurements = async (data: Measurements) => {

@@ -12,13 +12,7 @@ import {
 	ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-
-const loginSchema = z.object({
-	email: z.string().email('Invalid email'),
-	password: z.string().min(8, 'Password must be at least 8 characters'),
-})
-
-type LoginFormData = z.infer<typeof loginSchema>
+import { LoginFormData, loginSchema } from '../lib/definitions'
 
 export default function LoginPage() {
 	const router = useRouter()

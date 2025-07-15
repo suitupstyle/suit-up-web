@@ -9,7 +9,6 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession();
   const path = request.nextUrl.pathname;
 
-  // Rutas protegidas
   const protectedRoutes = ['/dashboard', '/admin'];
   const adminRoutes = ['/admin'];
 
@@ -18,7 +17,6 @@ export async function middleware(request: NextRequest) {
   }
 
   if (session) {
-    // Verificar rol de admin
     const { data: userData } = await supabase
       .from('users')
       .select('is_admin')

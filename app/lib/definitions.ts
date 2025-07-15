@@ -173,3 +173,28 @@ export type PaymentConfirmation = {
   amountPayed: number,
   measurementStatus: 'failed' | 'pending' | 'success',
 }
+
+export const loginSchema = z.object({
+  email: z.string().email('Invalid email'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+})
+
+export type LoginFormData = z.infer<typeof loginSchema>
+
+export type Order = {
+  id: string
+  customer: string
+  product: string
+  amount: number
+  status: 'pending' | 'processing' | 'shipped' | 'delivered'
+  date: string
+}
+
+export type OrderListResponse = {
+  data: Order[],
+  meta: {
+    page: number,
+    limit: number,
+    total: number
+  }
+}
