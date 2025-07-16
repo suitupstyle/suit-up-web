@@ -1,28 +1,28 @@
 'use client'
 
-import Image from 'next/image'
 import { useMutation } from '@tanstack/react-query'
-import { logger } from './lib/logger'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useOrderStore } from './stores/orderStore'
-import { useState } from 'react'
-import { OrdersService } from './services/orders.service'
 import { useItems } from './hooks/useItems'
-import { OrderResponse } from './lib/definitions'
+import { Items, PreorderResponse } from './lib/definitions'
+import { logger } from './lib/logger'
+import { OrdersService } from './services/orders.service'
+import { useOrderStore } from './stores/orderStore'
 
 export default function Page() {
-	const [itemIds, setItemIds] = useState([1])
 	const router = useRouter()
 
-	const { items, isLoading, isError } = useItems()
+	const { items } = useItems()
 
-	const { setOrderId } = useOrderStore()
+	const { setPreorderId } = useOrderStore()
 
-	const { mutate: createPost, isPending } = useMutation({
-		mutationFn: OrdersService.createOrder,
+	const { mutate: createPreorder } = useMutation<PreorderResponse, Error, Items[]>({
+		mutationFn: (items) => OrdersService.createPreorder({
+			itemIds: items.map(item => item.id),
+		}),
 		onSuccess: (data) => {
 			logger.log('Create data', data)
-			setOrderId((data as OrderResponse).id)
+			setPreorderId(data.id)
 			router.push(`/orders/instructions`)
 		},
 		onError: (error) => {
@@ -32,7 +32,7 @@ export default function Page() {
 	})
 
 	const onSubmit = () => {
-		createPost({ itemIds })
+		createPreorder(items as Items[])
 	}
 
 	return (
