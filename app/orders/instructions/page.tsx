@@ -1,23 +1,29 @@
 'use client'
 
+import { OrdersService } from '@/app/services/orders.service'
+import { useOrderStore } from '@/app/stores/orderStore'
+import BackButton from '@/app/ui/back-button'
+import { ArrowPathIcon, CheckCircleIcon, PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import { useMutation } from '@tanstack/react-query'
 import Link from 'next/link'
 import { useState } from 'react'
-import {
-	PhotoIcon,
-	ArrowPathIcon,
-	CheckCircleIcon,
-	XCircleIcon,
-} from '@heroicons/react/24/outline'
-import BackButton from '@/app/ui/back-button'
-import { useOrderStore } from '@/app/stores/orderStore'
 import z from 'zod'
-import { useMutation } from '@tanstack/react-query'
-import { OrdersService } from '@/app/services/orders.service'
 
 export default function Instructions() {
 	const [error, setError] = useState<string | null>(null)
-	const { id, frontImage, setFrontImage, sideImage, setSideImage } =
-		useOrderStore()
+	const {
+		id,
+		gender,
+		setGender,
+		height,
+		setHeight,
+		weight,
+		setWeight,
+		frontImage,
+		setFrontImage,
+		sideImage,
+		setSideImage,
+	} = useOrderStore()
 
 	const {
 		mutate,
@@ -28,6 +34,12 @@ export default function Instructions() {
 	} = useMutation({
 		mutationFn: OrdersService.uploadImages,
 	})
+
+	const isNextEnabled =
+		isSuccess &&
+		gender !== null &&
+		height !== null &&
+		weight !== null
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -150,6 +162,63 @@ export default function Instructions() {
 						)}
 					</div>
 				</div>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+					{/* GENDER */}
+					<div className="flex items-center justify-between text-gray-700 font-medium">
+						<span>Gender</span>
+						<div className="flex items-center space-x-3">
+							<label className="flex items-center space-x-1">
+								<input
+									type="radio"
+									name="gender"
+									value="male"
+									checked={gender === 'male'}
+									onChange={() => setGender('male')}
+									className="form-radio"
+								/>
+								<span className="text-sm">Male</span>
+							</label>
+							<label className="flex items-center space-x-1">
+								<input
+									type="radio"
+									name="gender"
+									value="female"
+									checked={gender === 'female'}
+									onChange={() => setGender('female')}
+									className="form-radio"
+								/>
+								<span className="text-sm">Female</span>
+							</label>
+						</div>
+					</div>
+
+					{/* HEIGHT */}
+					<div className="flex items-center justify-between text-gray-700 font-medium">
+						<span>Height (cm)</span>
+						<input
+							type="number"
+							value={height ?? ''}
+							onChange={(e) => setHeight(parseFloat(e.target.value) || 0)}
+							className="w-20 px-2 py-1 border rounded text-right"
+							step="0.1"
+							min="0"
+						/>
+					</div>
+
+					{/* WEIGHT */}
+					<div className="flex items-center justify-between text-gray-700 font-medium">
+						<span>Weight (kg)</span>
+						<input
+							type="number"
+							value={weight ?? ''}
+							onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
+							className="w-20 px-2 py-1 border rounded text-right"
+							step="0.1"
+							min="0"
+						/>
+					</div>
+				</div>
+
 
 				{/* Status indicators */}
 				<div className="h-12 mt-4 text-sm md:text-base">
@@ -199,12 +268,13 @@ export default function Instructions() {
 					<Link
 						href={'/orders/confirmation'}
 						className={`w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out ${
-							!isSuccess
+							!isNextEnabled
 								? 'bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed pointer-events-none'
 								: 'bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg'
 						}`}
-						aria-disabled={!isSuccess}
-						tabIndex={!isSuccess ? -1 : 0}>
+						aria-disabled={!isNextEnabled}
+						tabIndex={!isNextEnabled ? -1 : 0}
+					>
 						<span>Next</span>
 					</Link>
 				</div>
