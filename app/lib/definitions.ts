@@ -22,6 +22,7 @@ export type Items = {
   id: number,
   name: "Black Professional Business Suit",
   desc: string
+  price: number
   imageUrl?: string
 }
 
@@ -36,6 +37,10 @@ export type ItemsResponse = {
 
 export type PreOrderPayload = {
   itemIds: number[]
+}
+
+export type PreorderResponse = {
+  id: UUID
 }
 
 export type OrderResponse = {

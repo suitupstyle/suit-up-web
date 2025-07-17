@@ -4,9 +4,7 @@ import { UploadSchema } from '../lib/schemas';
 
 
 export const OrdersService = {
-  createOrder: async (orderData: PreOrderPayload) => {
-    return fetchMock('createOrderResponse') // TODO: comment once endpoint is finished
-
+  createPreorder: async (orderData: PreOrderPayload) => {
     return fetchClient('/preorders', {
       method: 'POST',
       body: JSON.stringify(orderData),

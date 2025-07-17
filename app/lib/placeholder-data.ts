@@ -4,6 +4,7 @@ export const items: Items = {
   id: 1,
   name: 'Black Professional Business Suit',
   desc: 'Description',
+  price: 99.0,
   imageUrl: '/home-suit.webp'
 }
 
