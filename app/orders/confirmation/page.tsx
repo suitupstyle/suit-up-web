@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { useOrderStore } from '@/app/stores/orderStore'
+import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
 import { useMeasurements } from '@/app/hooks/useMeasurements'
 import { type Measurements } from '@/app/lib/definitions'
@@ -11,7 +11,7 @@ import { OrdersService } from '@/app/services/orders.service'
 import { useMutation } from '@tanstack/react-query'
 
 export default function Confirmation() {
-	const { gender, height, weight, frontImage, sideImage } = useOrderStore()
+	const { gender, height, weight, frontImage, sideImage } = usePreOrderStore()
 
 	const { measurements, isLoading, isError } = useMeasurements()
 	const {
@@ -92,9 +92,18 @@ export default function Confirmation() {
 				<div className="bg-white rounded-lg shadow-md p-4 m-6">
 					<h2 className="md:text-lg font-semibold">Your Details</h2>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-700">
-						<div><span className="font-medium">Gender:</span> {gender ?? '-'}</div>
-						<div><span className="font-medium">Height:</span> {height != null ? `${height} cm` : '-'}</div>
-						<div><span className="font-medium">Weight:</span> {weight != null ? `${weight.toFixed(1)} kg` : '-'}</div>
+						<div>
+							<span className="font-medium">Gender:</span>{' '}
+							{gender ?? '-'}
+						</div>
+						<div>
+							<span className="font-medium">Height:</span>{' '}
+							{height != null ? `${height} cm` : '-'}
+						</div>
+						<div>
+							<span className="font-medium">Weight:</span>{' '}
+							{weight != null ? `${weight.toFixed(1)} kg` : '-'}
+						</div>
 					</div>
 				</div>
 

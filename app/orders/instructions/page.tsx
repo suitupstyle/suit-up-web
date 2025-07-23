@@ -1,29 +1,37 @@
 'use client'
 
+import { PreOrderFormData, preOrderSchema } from '@/app/lib/definitions'
+import { logger } from '@/app/lib/logger'
 import { OrdersService } from '@/app/services/orders.service'
-import { useOrderStore } from '@/app/stores/orderStore'
+import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
-import { ArrowPathIcon, CheckCircleIcon, PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
+import {
+	ArrowPathIcon,
+	CheckCircleIcon,
+	PhotoIcon,
+	XCircleIcon,
+} from '@heroicons/react/24/outline'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import Link from 'next/link'
-import { useState } from 'react'
+import clsx from 'clsx'
+import { useRouter } from 'next/navigation'
+import { useId, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import z from 'zod'
 
 export default function Instructions() {
 	const [error, setError] = useState<string | null>(null)
 	const {
 		id,
-		gender,
 		setGender,
-		height,
 		setHeight,
-		weight,
 		setWeight,
 		frontImage,
 		setFrontImage,
 		sideImage,
 		setSideImage,
-	} = useOrderStore()
+	} = usePreOrderStore()
+	logger.log('preorder id', { id })
 
 	const {
 		mutate,
@@ -32,14 +40,25 @@ export default function Instructions() {
 		isSuccess,
 		isPending,
 	} = useMutation({
-		mutationFn: OrdersService.uploadImages,
+		mutationFn: OrdersService.uploadImagesAndData,
 	})
 
-	const isNextEnabled =
-		isSuccess &&
-		gender !== null &&
-		height !== null &&
-		weight !== null
+	const {
+		register,
+		handleSubmit,
+		watch,
+		formState: { errors, isSubmitting },
+	} = useForm<PreOrderFormData>({
+		resolver: zodResolver(preOrderSchema),
+		defaultValues: {
+			gender: 'male',
+			weight: 0,
+			height: 0,
+		},
+	})
+
+	const instructionsFormId = useId()
+	const router = useRouter()
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -77,26 +96,34 @@ export default function Instructions() {
 		}
 	}
 
-	const handleUpload = async () => {
+	const handleUpload = async (data: PreOrderFormData) => {
 		if (!frontImage || !sideImage) {
 			setError('Please upload both front and side pictures')
 			return
 		}
-
+		logger.log('preorder id', id)
 		mutate(
-			{ orderId: id ?? '', frontImage, sideImage },
+			{
+				id,
+				frontImage,
+				sideImage,
+				gender: data.gender,
+				weight: data.weight,
+				height: data.height,
+			},
 			{
 				onSuccess: () => {
-					// Manejo de éxito
+					setGender(data.gender)
+					setWeight(data.weight)
+					setHeight(data.height)
+					router.push('/orders/confirmation')
 				},
 				onError: (err) => {
-					// Error ya manejado por Zod o API
+					logger.error('Instructions POST error:', err)
 				},
 			}
 		)
 	}
-
-	const isUploadDisabled = !frontImage || !sideImage
 
 	return (
 		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center relative">
@@ -162,18 +189,19 @@ export default function Instructions() {
 						)}
 					</div>
 				</div>
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+				<form
+					id={instructionsFormId}
+					onSubmit={handleSubmit(handleUpload)}
+					className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-4">
 					{/* GENDER */}
-					<div className="flex items-center justify-between text-gray-700 font-medium">
-						<span>Gender</span>
+					<div className="flex items-center justify-between text-gray-700 font-medium lg:pr-6 lg:border-gray-300 border-r">
+						<span className="w-full text-start">Gender</span>
 						<div className="flex items-center space-x-3">
 							<label className="flex items-center space-x-1">
 								<input
 									type="radio"
-									name="gender"
 									value="male"
-									checked={gender === 'male'}
-									onChange={() => setGender('male')}
+									{...register('gender')}
 									className="form-radio"
 								/>
 								<span className="text-sm">Male</span>
@@ -181,10 +209,8 @@ export default function Instructions() {
 							<label className="flex items-center space-x-1">
 								<input
 									type="radio"
-									name="gender"
 									value="female"
-									checked={gender === 'female'}
-									onChange={() => setGender('female')}
+									{...register('gender')}
 									className="form-radio"
 								/>
 								<span className="text-sm">Female</span>
@@ -193,13 +219,17 @@ export default function Instructions() {
 					</div>
 
 					{/* HEIGHT */}
-					<div className="flex items-center justify-between text-gray-700 font-medium">
-						<span>Height (cm)</span>
+					<div className="flex items-center justify-between text-gray-700 font-medium lg:pr-6 lg:border-gray-300 border-r">
+						<span className="w-full text-start">Height (cm)</span>
 						<input
 							type="number"
-							value={height ?? ''}
-							onChange={(e) => setHeight(parseFloat(e.target.value) || 0)}
-							className="w-20 px-2 py-1 border rounded text-right"
+							{...register('height')}
+							className={clsx(
+								'w-full h-11 px-2 py-1 border rounded text-right',
+								{
+									'border-red-500': errors.height,
+								}
+							)}
 							step="0.1"
 							min="0"
 						/>
@@ -207,18 +237,38 @@ export default function Instructions() {
 
 					{/* WEIGHT */}
 					<div className="flex items-center justify-between text-gray-700 font-medium">
-						<span>Weight (kg)</span>
+						<span className="w-full text-start">Weight (kg)</span>
 						<input
 							type="number"
-							value={weight ?? ''}
-							onChange={(e) => setWeight(parseFloat(e.target.value) || 0)}
-							className="w-20 px-2 py-1 border rounded text-right"
+							{...register('weight')}
+							className={clsx(
+								'w-full h-11 px-2 py-1 border rounded text-right',
+								{
+									'border-red-500': errors.weight,
+								}
+							)}
 							step="0.1"
 							min="0"
 						/>
 					</div>
+				</form>
+				<div className="w-full h-5 flex flex-col gap-1 justify-start">
+					{errors.gender && (
+						<small className="text-sm text-red-600 text-left">
+							Gender error: {errors.gender.message}
+						</small>
+					)}
+					{errors.height && (
+						<small className="text-sm text-red-600 text-left">
+							Height error: {errors.height.message}
+						</small>
+					)}
+					{errors.weight && (
+						<small className="text-sm text-red-600 text-left">
+							Weight error: {errors.weight.message}
+						</small>
+					)}
 				</div>
-
 
 				{/* Status indicators */}
 				<div className="h-12 mt-4 text-sm md:text-base">
@@ -248,35 +298,20 @@ export default function Instructions() {
 			<footer className="w-full">
 				<div className="w-full flex justify-between items-center gap-5">
 					<button
-						onClick={handleUpload}
-						disabled={isUploadDisabled || isPending}
-						className={`w-full h-14 rounded-lg border-black border flex items-center justify-center gap-2 transition-colors ease-linear ${
-							isUploadDisabled || isPending
-								? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-								: 'bg-white text-black hover:bg-black hover:text-white'
-						}`}>
-						{isPending ? (
-							<>
-								<ArrowPathIcon className="w-5 h-5 animate-spin" />
-								<span>Uploading...</span>
-							</>
-						) : (
-							<span>Upload</span>
+						type="submit"
+						form={instructionsFormId}
+						className={clsx(
+							'w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out',
+							{
+								'bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed pointer-events-none':
+									isPending,
+								'bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg':
+									!isPending,
+							}
 						)}
-					</button>
-
-					<Link
-						href={'/orders/confirmation'}
-						className={`w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out ${
-							!isNextEnabled
-								? 'bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed pointer-events-none'
-								: 'bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg'
-						}`}
-						aria-disabled={!isNextEnabled}
-						tabIndex={!isNextEnabled ? -1 : 0}
-					>
+						disabled={isPending}>
 						<span>Next</span>
-					</Link>
+					</button>
 				</div>
 			</footer>
 		</div>

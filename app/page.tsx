@@ -4,25 +4,30 @@ import { useMutation } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useItems } from './hooks/useItems'
-import { Items, PreorderResponse } from './lib/definitions'
+import { type Items, type PreorderResponse } from './lib/definitions'
 import { logger } from './lib/logger'
 import { OrdersService } from './services/orders.service'
-import { useOrderStore } from './stores/orderStore'
+import { usePreOrderStore } from './stores/preOrderStore'
 
 export default function Page() {
 	const router = useRouter()
 
 	const { items } = useItems()
 
-	const { setPreorderId } = useOrderStore()
+	const { setId } = usePreOrderStore()
 
-	const { mutate: createPreorder } = useMutation<PreorderResponse, Error, Items[]>({
-		mutationFn: (items) => OrdersService.createPreorder({
-			itemIds: items.map(item => item.id),
-		}),
-		onSuccess: (data) => {
-			logger.log('Create data', data)
-			setPreorderId(data.id)
+	const { mutate: createPreorder } = useMutation<
+		PreorderResponse,
+		Error,
+		Items[]
+	>({
+		mutationFn: (items) =>
+			OrdersService.createPreorder({
+				itemIds: items.map((item) => item.id),
+			}),
+		onSuccess: (response) => {
+			logger.log('Create data', response)
+			setId(response.data.id)
 			router.push(`/orders/instructions`)
 		},
 		onError: (error) => {

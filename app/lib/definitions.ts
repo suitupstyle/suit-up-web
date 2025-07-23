@@ -39,9 +39,27 @@ export type PreOrderPayload = {
   itemIds: number[]
 }
 
-export type PreorderResponse = {
-  id: UUID
+export type PreOrder = {
+  id: UUID | null
+  gender: string | null
+  height: number | null
+  weight: number | null
+  frontImage: string | null
+  sideImage: string | null
 }
+
+export type PreorderResponse = {
+  data: PreOrder,
+  meta: {} | null,
+}
+
+export const preOrderSchema = z.object({
+  gender: z.enum(['male', 'female']),
+  height: z.coerce.number(),
+  weight: z.coerce.number(),
+})
+
+export type PreOrderFormData = z.infer<typeof preOrderSchema>
 
 export type OrderResponse = {
   id: UUID
