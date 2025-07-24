@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
-import { OrdersService } from "../services/orders.service"
+import { PreOrdersService } from "../services/preOrders.service"
 import { PaymentConfirmation } from "../lib/definitions"
 
 export const usePaymentConfirmation = () => {
@@ -11,7 +11,7 @@ export const usePaymentConfirmation = () => {
     refetch,
   } = useQuery({
     queryKey: ['payment-confirmation'],
-    queryFn: OrdersService.getPaymentConfirmation,
+    queryFn: PreOrdersService.getPaymentConfirmation,
   })
 
   return {
