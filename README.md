@@ -41,10 +41,8 @@ A Next.js application for a bespoke suit manufacturing business that integrates 
    ```
 
 ## Environment Variables
-- `NEXT_PUBLIC_3DLOOK_API_KEY`: Your 3DLook API key
-- `DATABASE_URL`: Connection string for your database
-- `NEXTAUTH_SECRET`: Secret for NextAuth.js
-- `NEXTAUTH_URL`: Your application URL
+- `NEXT_PUBLIC_API_URL`: API base url.
+- `NEXT_PUBLIC_ENV`: Environment for development, staging, or production.
 
 ## Production Build
 ```bash
