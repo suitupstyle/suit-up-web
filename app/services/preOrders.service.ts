@@ -1,10 +1,10 @@
 import { fetchClient, fetchMock, mutateMockMeasurements } from '../lib/api/client';
-import { type PreOrder, type Measurements, type PreOrderPayload } from '../lib/definitions';
+import { type PreOrder, type PreOrderPayload, type PreOrderResponse, type MeasurementData } from '../lib/definitions';
 import { logger } from '../lib/logger';
 import { UploadSchema } from '../lib/schemas';
 
 
-export const OrdersService = {
+export const PreOrdersService = {
   createPreorder: async (orderData: PreOrderPayload) => {
     return fetchClient('/preorders', {
       method: 'POST',
@@ -12,7 +12,7 @@ export const OrdersService = {
     });
   },
 
-  uploadImagesAndData: async (preorder: PreOrder) => {
+  uploadImagesAndData: async (preorder: Pick<PreOrder, 'id' | 'gender' | 'height' | 'weight' | 'frontImage' | 'sideImage'>): Promise<PreOrderResponse> => {
     logger.log('preorder', preorder)
     const { id, frontImage, sideImage, gender, weight, height } = preorder
     const validated = UploadSchema.parse({
@@ -35,8 +35,20 @@ export const OrdersService = {
     formData.append('weight', (weight as number).toString());
     formData.append('height', (height as number).toString());
 
-
-    return fetchMock('uploadImagesResponse')  // TODO: comment once endpoint is finished
+    // TODO: @reynierpsalas comment once endpoint is finished
+    // return {
+    //   data: {
+    //     id,
+    //     gender,
+    //     weight: Number(weight),
+    //     height: Number(height),
+    //     frontImage,
+    //     sideImage,
+    //     createdAt: new Date(),
+    //     measurementData: await fetchMock<MeasurementData>('mockMeasurementData')
+    //   },
+    //   meta: null
+    // }
 
     return fetchClient(`/preorders/${id}/measure`, {
       method: 'POST',
@@ -50,10 +62,7 @@ export const OrdersService = {
       }),
     })
   },
-  getMeasurements: async () => {
-    return fetchMock('measurements') // TODO: comment once endpoint is finished
-  },
-  updateMeasurements: async (data: Measurements) => {
+  updateMeasurements: async (data: MeasurementData) => {
     return mutateMockMeasurements(data) // TODO: comment once endpoint is finished
   },
   postUserDetails: async (data: any) => {
