@@ -1,5 +1,5 @@
-import { type Measurements } from "../definitions";
-import { createOrderResponse, detailsResponse, items, itemsResponse, measurements, orderCost, orders, ordersResponse, paymentConfirmation, paymentResponse, uploadImagesResponse } from "../placeholder-data";
+import { type MeasurementData } from "../definitions";
+import { createOrderResponse, detailsResponse, items, itemsResponse, orderCost, orders, ordersResponse, paymentConfirmation, paymentResponse, mockMeasurementData } from "../placeholder-data";
 import { promisifyWithDelay } from "../utils";
 
 export const fetchClient = async (url: string, options?: RequestInit) => {
@@ -23,28 +23,30 @@ const mocksData = {
   items,
   itemsResponse,
   createOrderResponse,
-  uploadImagesResponse,
-  measurements,
   detailsResponse,
   orderCost,
   paymentResponse,
   paymentConfirmation,
   orders,
   ordersResponse,
+  mockMeasurementData,
 }
 
 type mockData = keyof typeof mocksData
 
-export const fetchMock = async (data: mockData) => {
-  return promisifyWithDelay(mocksData[data], 500)
+export const fetchMock = async <T>(data: mockData): Promise<T> => {
+  return promisifyWithDelay(mocksData[data], 500) as T
 }
 
-export const mutateMockMeasurements = async (data: Measurements) => {
-  return promisifyWithDelay(
-    () => {
-      for (const key in data) {
-        mocksData.measurements[key] = data[key]
-      }
-    }, 150
-  )
-}
+export const mutateMockMeasurements = async (partialData: Partial<MeasurementData>): Promise<MeasurementData> => {
+  return promisifyWithDelay(() => {
+    // Create a completely new object to avoid reference sharing
+    const newData: MeasurementData = {
+      ...structuredClone(mocksData.mockMeasurementData), // Deep clone existing data
+      ...partialData // Apply updates
+    };
+
+    mocksData.mockMeasurementData = newData;
+    return mocksData.mockMeasurementData
+  }, 150);
+};
