@@ -2,7 +2,7 @@
 
 import { PreOrderFormData, preOrderSchema } from '@/app/lib/definitions'
 import { logger } from '@/app/lib/logger'
-import { OrdersService } from '@/app/services/orders.service'
+import { PreOrdersService } from '@/app/services/preOrders.service'
 import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
 import {
@@ -30,6 +30,7 @@ export default function Instructions() {
 		setFrontImage,
 		sideImage,
 		setSideImage,
+		setMeasurements,
 	} = usePreOrderStore()
 	logger.log('preorder id', { id })
 
@@ -39,8 +40,9 @@ export default function Instructions() {
 		error: apiError,
 		isSuccess,
 		isPending,
+		data,
 	} = useMutation({
-		mutationFn: OrdersService.uploadImagesAndData,
+		mutationFn: PreOrdersService.uploadImagesAndData,
 	})
 
 	const {
@@ -96,7 +98,7 @@ export default function Instructions() {
 		}
 	}
 
-	const handleUpload = async (data: PreOrderFormData) => {
+	const handleUpload = async (formData: PreOrderFormData) => {
 		if (!frontImage || !sideImage) {
 			setError('Please upload both front and side pictures')
 			return
@@ -107,15 +109,17 @@ export default function Instructions() {
 				id,
 				frontImage,
 				sideImage,
-				gender: data.gender,
-				weight: data.weight,
-				height: data.height,
+				gender: formData.gender,
+				weight: formData.weight,
+				height: formData.height,
 			},
 			{
-				onSuccess: () => {
-					setGender(data.gender)
-					setWeight(data.weight)
-					setHeight(data.height)
+				onSuccess: (data) => {
+					logger.log('measurements response', data)
+					setGender(data.data.gender)
+					setWeight(data.data.weight)
+					setHeight(data.data.height)
+					setMeasurements(data.data.measurementData)
 					router.push('/orders/confirmation')
 				},
 				onError: (err) => {

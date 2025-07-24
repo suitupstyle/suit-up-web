@@ -22,7 +22,7 @@ import {
 } from '@/app/lib/definitions'
 import { useOrderCost } from '@/app/hooks/useOrderCost'
 import { useMutation } from '@tanstack/react-query'
-import { OrdersService } from '@/app/services/orders.service'
+import { PreOrdersService } from '@/app/services/preOrders.service'
 
 export default function Payment() {
 	const {
@@ -47,7 +47,7 @@ export default function Payment() {
 	const total = subtotal + taxes
 
 	const { mutate: submitPayment, isError: isPaymentError } = useMutation({
-		mutationFn: OrdersService.postPayment,
+		mutationFn: PreOrdersService.postPayment,
 		onSuccess: (data) => {
 			logger.log('Payment submitted:', data as PaymentResponse)
 			router.push('/orders/payment-confirmation')

@@ -21,7 +21,7 @@ import {
 	detailsSchema,
 } from '@/app/lib/definitions'
 import { useMutation } from '@tanstack/react-query'
-import { OrdersService } from '@/app/services/orders.service'
+import { PreOrdersService } from '@/app/services/preOrders.service'
 
 export default function Details() {
 	const {
@@ -38,7 +38,7 @@ export default function Details() {
 	const detailsFormId = useId()
 
 	const { mutate: submitDetails, isError } = useMutation({
-		mutationFn: OrdersService.postUserDetails,
+		mutationFn: PreOrdersService.postUserDetails,
 		onSuccess: (data) => {
 			logger.log('Form submitted:', data as DetailsResponse)
 			router.push('/orders/payment')

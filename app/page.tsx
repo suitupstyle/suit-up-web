@@ -4,9 +4,9 @@ import { useMutation } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useItems } from './hooks/useItems'
-import { type Items, type PreorderResponse } from './lib/definitions'
+import { type Item, type PreOrderResponse } from './lib/definitions'
 import { logger } from './lib/logger'
-import { OrdersService } from './services/orders.service'
+import { PreOrdersService } from './services/preOrders.service'
 import { usePreOrderStore } from './stores/preOrderStore'
 
 export default function Page() {
@@ -17,12 +17,12 @@ export default function Page() {
 	const { setId } = usePreOrderStore()
 
 	const { mutate: createPreorder } = useMutation<
-		PreorderResponse,
+		PreOrderResponse,
 		Error,
-		Items[]
+		Item[]
 	>({
 		mutationFn: (items) =>
-			OrdersService.createPreorder({
+			PreOrdersService.createPreorder({
 				itemIds: items.map((item) => item.id),
 			}),
 		onSuccess: (response) => {
@@ -37,7 +37,7 @@ export default function Page() {
 	})
 
 	const onSubmit = () => {
-		createPreorder(items as Items[])
+		createPreorder(items as Item[])
 	}
 
 	return (
