@@ -28,14 +28,7 @@ export const PreOrdersService = {
       },
     });
 
-    const formData = new FormData();
-    formData.append('frontImage', validated.frontImage.data);
-    formData.append('sideImage', validated.sideImage.data);
-    formData.append('gender', (gender as string));
-    formData.append('weight', (weight as number).toString());
-    formData.append('height', (height as number).toString());
-
-    // TODO: @reynierpsalas comment once endpoint is finished
+    // TODO: comment once endpoint is finished
     // return {
     //   data: {
     //     id,
@@ -52,7 +45,6 @@ export const PreOrdersService = {
 
     return fetchClient(`/preorders/${id}/measure`, {
       method: 'POST',
-      //body: formData,
       body: JSON.stringify({
         frontImage,
         sideImage,
@@ -62,8 +54,13 @@ export const PreOrdersService = {
       }),
     })
   },
-  updateMeasurements: async (data: MeasurementData) => {
-    return mutateMockMeasurements(data) // TODO: comment once endpoint is finished
+  updateMeasurements: async (data: PreOrder) => {
+    if (data == null || data.measurementData == null) throw new Error('Missing update data')
+    // return mutateMockMeasurements(data.measurementData) // TODO: comment once endpoint is finished
+    return fetchClient(`/preorders/${data.id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
   },
   postUserDetails: async (data: any) => {
     return fetchMock('detailsResponse') // TODO: comment once endpoint is finished
