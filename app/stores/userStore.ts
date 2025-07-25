@@ -1,13 +1,12 @@
-import { User } from "@supabase/supabase-js";
 import { create } from "zustand";
+import { AppUser } from "../lib/definitions";
 
 type UserStore = {
-  user: User | null,
-  setUser: (user: User) => void
+  user: AppUser | null,
+  setUser: (user: AppUser | null) => void
 }
 
 export const useUserStore = create<UserStore>((set) => ({
   user: null,
   setUser: (user) => set({ user }),
-  clearStore: () => set({ user: null }),
 }))

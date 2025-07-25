@@ -14,32 +14,33 @@ import BackButton from '@/app/ui/back-button'
 import { useRouter } from 'next/navigation'
 import { useState, useId } from 'react'
 import { logger } from '@/app/lib/logger'
-import {
-	DetailsFormData,
-	DetailsResponse,
-	detailsSchema,
-} from '@/app/lib/definitions'
+import { type UserFormData, type AppUser } from '@/app/lib/definitions'
+import { UserSchema } from '@/app/lib/schemas'
 import { useMutation } from '@tanstack/react-query'
 import { OrdersService } from '@/app/services/orders.service'
+import { UserService } from '@/app/services/user.service'
+import { useUserStore } from '@/app/stores/userStore'
 
 export default function Details() {
 	const {
 		register,
 		handleSubmit,
 		formState: { errors, isSubmitting },
-	} = useForm<DetailsFormData>({
-		resolver: zodResolver(detailsSchema),
+	} = useForm<UserFormData>({
+		resolver: zodResolver(UserSchema),
 	})
 	const router = useRouter()
 	const [isPasswordVisible, setIsPasswordVisible] = useState(false)
 	const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
 		useState(false)
 	const detailsFormId = useId()
+	const { setUser } = useUserStore()
 
 	const { mutate: submitDetails, isError } = useMutation({
-		mutationFn: OrdersService.postUserDetails,
+		mutationFn: UserService.signUp,
 		onSuccess: (data) => {
-			logger.log('Form submitted:', data as DetailsResponse)
+			logger.log('Form submitted:', data)
+			setUser(data as AppUser)
 			router.push('/orders/payment')
 		},
 		onError: (error) => {
@@ -47,7 +48,7 @@ export default function Details() {
 		},
 	})
 
-	const onSubmit = async (data: DetailsFormData) => {
+	const onSubmit = async (data: UserFormData) => {
 		submitDetails(data)
 	}
 
@@ -75,11 +76,11 @@ export default function Details() {
 							<UserIcon className="h-5 w-5 text-gray-400" />
 						</div>
 						<input
-							{...register('fullName')}
+							{...register('full_name')}
 							type="text"
 							placeholder="Full Name"
 							className={`pl-10 w-full rounded-lg border-2 ${
-								errors.fullName
+								errors.full_name
 									? 'border-red-500'
 									: 'border-gray-300'
 							} focus:border-black p-3`}
@@ -87,9 +88,9 @@ export default function Details() {
 						/>
 					</div>
 					<div className="h-5">
-						{errors.fullName && (
+						{errors.full_name && (
 							<p className="text-sm text-red-600 text-left">
-								{errors.fullName.message}
+								{errors.full_name.message}
 							</p>
 						)}
 					</div>
