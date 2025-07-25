@@ -12,13 +12,6 @@ export function validateUUID(value: unknown): UUID {
   return uuidSchema.parse(value);
 }
 
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-};
-
 export type Item = {
   id: number,
   name: "Black Professional Business Suit",
