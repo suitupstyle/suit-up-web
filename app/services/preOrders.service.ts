@@ -62,16 +62,4 @@ export const PreOrdersService = {
       body: JSON.stringify(data),
     })
   },
-  postUserDetails: async (data: any) => {
-    return fetchMock('detailsResponse') // TODO: comment once endpoint is finished
-  },
-  getOrderCost: async () => {
-    return fetchMock('orderCost') // TODO: comment once endpoint is finished
-  },
-  postPayment: async (data: any) => {
-    return fetchMock('paymentResponse') // TODO: comment once endpoint is finished
-  },
-  getPaymentConfirmation: async (data: any) => {
-    return fetchMock('paymentConfirmation') // TODO: comment once endpoint is finished
-  },
 };
