@@ -17,7 +17,6 @@ import { logger } from '@/app/lib/logger'
 import { type UserFormData, type AppUser } from '@/app/lib/definitions'
 import { UserSchema } from '@/app/lib/schemas'
 import { useMutation } from '@tanstack/react-query'
-import { OrdersService } from '@/app/services/orders.service'
 import { UserService } from '@/app/services/user.service'
 import { useUserStore } from '@/app/stores/userStore'
 

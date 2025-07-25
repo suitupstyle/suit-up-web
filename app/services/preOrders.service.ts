@@ -1,7 +1,7 @@
-import { fetchClient, fetchMock, mutateMockMeasurements } from '../lib/api/client';
-import { type PreOrder, type PreOrderPayload, type PreOrderResponse, type MeasurementData } from '../lib/definitions';
-import { logger } from '../lib/logger';
-import { UploadSchema } from '../lib/schemas';
+import { fetchClient } from '@/app/lib/api/client';
+import { type PreOrder, type PreOrderPayload, type PreOrderResponse } from '@/app/lib/definitions';
+import { logger } from '@/app/lib/logger';
+import { UploadSchema } from '@/app/lib/schemas';
 
 
 export const PreOrdersService = {

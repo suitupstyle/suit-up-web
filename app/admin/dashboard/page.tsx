@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { useOrders } from '@/app/hooks/useOrders'
@@ -11,7 +10,6 @@ export default function DashboardPage() {
 	const { orders, isLoading, isFetching, isError, error, refetch } =
 		useOrders()
 
-	// Función para exportar a CSV
 	const exportToCSV = () => {
 		const csvContent =
 			'ID,Customer,Product,Amount,Status,Date\n' +
@@ -34,7 +32,6 @@ export default function DashboardPage() {
 		document.body.removeChild(link)
 	}
 
-	// Función para formatear el estado
 	const getStatusBadge = (status: string) => {
 		const statusClasses = {
 			pending: 'bg-yellow-100 text-yellow-800',

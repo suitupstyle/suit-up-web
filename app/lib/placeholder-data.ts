@@ -1,4 +1,4 @@
-import { DetailsResponse, Item, ItemsResponse, MeasurementData, Order, OrderCost, OrderResponse, OrderListResponse, PaymentConfirmation, PaymentResponse } from "./definitions";
+import { type DetailsResponse, type Item, type ItemsResponse, type MeasurementData, type Order, type OrderCost, type OrderResponse, type OrderListResponse, type PaymentConfirmation, type PaymentResponse } from "@/app/lib/definitions";
 
 export const items: Item = {
   id: 1,

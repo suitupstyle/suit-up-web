@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { type PreOrder } from '../lib/definitions'
+import { type PreOrder } from '@/app/lib/definitions'
 
 type PreOrderStore = Pick<PreOrder, 'id' | 'gender' | 'height' | 'weight' | 'frontImage' | 'sideImage' | 'measurementData'> & {
   setId: (id: PreOrder['id']) => void

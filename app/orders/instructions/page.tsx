@@ -1,6 +1,7 @@
 'use client'
 
-import { PreOrderFormData, preOrderSchema } from '@/app/lib/definitions'
+import { type PreOrderFormData } from '@/app/lib/definitions'
+import { PreOrderSchema } from '@/app/lib/schemas'
 import { logger } from '@/app/lib/logger'
 import { PreOrdersService } from '@/app/services/preOrders.service'
 import { usePreOrderStore } from '@/app/stores/preOrderStore'
@@ -51,7 +52,7 @@ export default function Instructions() {
 		watch,
 		formState: { errors, isSubmitting },
 	} = useForm<PreOrderFormData>({
-		resolver: zodResolver(preOrderSchema),
+		resolver: zodResolver(PreOrderSchema),
 		defaultValues: {
 			gender: 'male',
 			weight: 0,

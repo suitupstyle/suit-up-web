@@ -1,8 +1,8 @@
 // app/admin/layout.tsx
 'use client'
 
-import { useUIStore } from '../stores/uiStore'
-import Sidebar from '../ui/sidebar'
+import { useUIStore } from '@/app/stores/uiStore'
+import Sidebar from '@/app/ui/sidebar'
 
 export default function AdminLayout({
 	children,
@@ -13,12 +13,10 @@ export default function AdminLayout({
 
 	return (
 		<div className="flex h-screen">
-			{/* Sidebar para desktop y tablet (siempre visible) */}
 			<div className="hidden lg:flex">
 				<Sidebar />
 			</div>
 
-			{/* Overlay para móvil cuando el sidebar está abierto */}
 			{mobileSidebarOpen && (
 				<div
 					className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden backdrop-blur-[2px] backdrop-saturate-50"
@@ -26,7 +24,6 @@ export default function AdminLayout({
 				/>
 			)}
 
-			{/* Sidebar móvil (se desliza) */}
 			<div
 				className={`fixed inset-y-0 left-0 z-50 w-64 transform ${
 					mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -34,9 +31,7 @@ export default function AdminLayout({
 				<Sidebar />
 			</div>
 
-			{/* Contenido principal */}
 			<div className="flex-1 flex flex-col overflow-hidden">
-				{/* Navbar superior para móviles (con botón de hamburguesa) */}
 				<header className="lg:hidden p-4 border-b border-gray-200">
 					<button
 						onClick={() =>

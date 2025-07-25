@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import { PreOrdersService } from "../services/preOrders.service"
-import { OrderCost } from "../lib/definitions"
-import { logger } from "../lib/logger"
+import { type OrderCost } from "@/app/lib/definitions"
+import { OrdersService } from "@/app/services/orders.service"
 
 export const useOrderCost = () => {
   const {
@@ -12,7 +11,7 @@ export const useOrderCost = () => {
     refetch,
   } = useQuery({
     queryKey: ['order-cost'],
-    queryFn: PreOrdersService.getOrderCost,
+    queryFn: OrdersService.getOrderCost,
   })
 
   return {

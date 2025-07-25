@@ -2,7 +2,6 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { supabase } from '../lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
 import {

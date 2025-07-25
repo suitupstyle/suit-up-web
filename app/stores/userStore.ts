@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AppUser } from "../lib/definitions";
+import { type AppUser } from "@/app/lib/definitions";
 
 type UserStore = {
   user: AppUser | null,

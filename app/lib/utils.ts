@@ -1,5 +1,5 @@
-import { UUID } from "./definitions";
-import { UUIDSchema } from "./schemas";
+import { type UUID } from "@/app/lib/definitions";
+import { UUIDSchema } from "@/app/lib/schemas";
 
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {

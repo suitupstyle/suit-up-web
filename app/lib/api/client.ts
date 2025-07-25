@@ -1,6 +1,6 @@
-import { type MeasurementData } from "../definitions";
-import { createOrderResponse, detailsResponse, items, itemsResponse, orderCost, orders, ordersResponse, paymentConfirmation, paymentResponse, mockMeasurementData } from "../placeholder-data";
-import { promisifyWithDelay } from "../utils";
+import { type MeasurementData } from "@/app/lib/definitions";
+import { createOrderResponse, detailsResponse, items, itemsResponse, orderCost, orders, ordersResponse, paymentConfirmation, paymentResponse, mockMeasurementData } from "@/app/lib/placeholder-data";
+import { promisifyWithDelay } from "@/app/lib/utils";
 
 export const fetchClient = async (url: string, options?: RequestInit) => {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
