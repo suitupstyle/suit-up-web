@@ -1,3 +1,6 @@
+import { UUID } from "./definitions";
+import { UUIDSchema } from "./schemas";
+
 export const formatCurrency = (amount: number) => {
   return (amount / 100).toLocaleString('en-US', {
     style: 'currency',
@@ -55,4 +58,8 @@ export const measurementsTagMap = {
   'knee': 'volume_params.knee',
   'calf Bottom': 'volume_params.calf',
   'waist Coat Back Length': 'front_params.new_jacket_length',
+}
+
+export function validateUUID(value: unknown): UUID {
+  return UUIDSchema.parse(value);
 }
