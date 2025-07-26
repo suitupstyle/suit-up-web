@@ -3,45 +3,72 @@
 import { useState } from 'react'
 import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { useOrderStore } from '@/app/stores/orderStore'
+import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
-import { useMeasurements } from '@/app/hooks/useMeasurements'
-import { type Measurements } from '@/app/lib/definitions'
-import { OrdersService } from '@/app/services/orders.service'
+import {
+	type MeasurementsTags,
+	type MeasurementData,
+} from '@/app/lib/definitions'
+import { PreOrdersService } from '@/app/services/preOrders.service'
 import { useMutation } from '@tanstack/react-query'
+import _ from 'lodash'
+import { measurementsTagMap } from '@/app/lib/utils'
+import { logger } from '@/app/lib/logger'
+
+const measurementsForm: Array<MeasurementsTags> = Object.keys(
+	measurementsTagMap
+) as Array<MeasurementsTags>
 
 export default function Confirmation() {
-	const { gender, height, weight, frontImage, sideImage } = useOrderStore()
+	const {
+		id,
+		gender,
+		height,
+		weight,
+		frontImage,
+		sideImage,
+		measurementData,
+		setMeasurements,
+	} = usePreOrderStore()
 
-	const { measurements, isLoading, isError } = useMeasurements()
 	const {
 		mutate: mutateMeasurements,
-		isError: isUpdateError,
+		isError,
 		isPending,
 		isSuccess,
 	} = useMutation({
-		mutationFn: OrdersService.updateMeasurements,
+		mutationFn: PreOrdersService.updateMeasurements,
 		onSuccess: () => {},
 		onError: () => {},
 	})
 
 	const [isEditing, setIsEditing] = useState(false)
-	const [tempMeasurements, setTempMeasurements] = useState<Measurements>(
-		measurements as Measurements
+	const [tempMeasurements, setTempMeasurements] = useState<MeasurementData>(
+		measurementData as MeasurementData
 	)
 
-	const handleMeasurementChange = (
-		field: keyof Measurements,
-		value: string
-	) => {
-		setTempMeasurements({
-			...tempMeasurements,
-			[field]: parseFloat(value) || 0,
+	const handleMeasurementChange = (path: string, value: string) => {
+		logger.log('change data', { path, value })
+		setTempMeasurements((prev) => {
+			const cloned = _.cloneDeep(prev)
+			const parsedValue = parseFloat(value) || 0
+			return _.set(cloned, path, parsedValue)
 		})
+		logger.log('change result', tempMeasurements)
 	}
 
 	const saveMeasurements = () => {
-		mutateMeasurements(tempMeasurements)
+		setMeasurements(tempMeasurements)
+		mutateMeasurements({
+			id,
+			gender,
+			height,
+			weight,
+			frontImage,
+			sideImage,
+			createdAt: null,
+			measurementData: tempMeasurements,
+		})
 		setIsEditing(false)
 	}
 
@@ -92,9 +119,18 @@ export default function Confirmation() {
 				<div className="bg-white rounded-lg shadow-md p-4 m-6">
 					<h2 className="md:text-lg font-semibold">Your Details</h2>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-gray-700">
-						<div><span className="font-medium">Gender:</span> {gender ?? '-'}</div>
-						<div><span className="font-medium">Height:</span> {height != null ? `${height} cm` : '-'}</div>
-						<div><span className="font-medium">Weight:</span> {weight != null ? `${weight.toFixed(1)} kg` : '-'}</div>
+						<div>
+							<span className="font-medium">Gender:</span>{' '}
+							{gender ?? '-'}
+						</div>
+						<div>
+							<span className="font-medium">Height:</span>{' '}
+							{height != null ? `${height} cm` : '-'}
+						</div>
+						<div>
+							<span className="font-medium">Weight:</span>{' '}
+							{weight != null ? `${weight.toFixed(1)} kg` : '-'}
+						</div>
 					</div>
 				</div>
 
@@ -108,7 +144,7 @@ export default function Confirmation() {
 							<button
 								onClick={() => {
 									setTempMeasurements(
-										measurements as Measurements
+										measurementData as MeasurementData
 									)
 									setIsEditing(true)
 								}}
@@ -128,132 +164,70 @@ export default function Confirmation() {
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{/* Group 1 */}
 						<div className="space-y-3">
-							<MeasurementField
-								label="Chest"
-								value={
-									isEditing
-										? tempMeasurements.chest
-										: measurements?.chest ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('chest', v)
-								}
-							/>
-							<MeasurementField
-								label="Stomach"
-								value={
-									isEditing
-										? tempMeasurements.stomach
-										: measurements?.stomach ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('stomach', v)
-								}
-							/>
-							<MeasurementField
-								label="Seat (Hips)"
-								value={
-									isEditing
-										? tempMeasurements.seat
-										: measurements?.seat ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('seat', v)
-								}
-							/>
-							<MeasurementField
-								label="Shoulder"
-								value={
-									isEditing
-										? tempMeasurements.shoulder
-										: measurements?.shoulder ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('shoulder', v)
-								}
-							/>
-							<MeasurementField
-								label="Back Length"
-								value={
-									isEditing
-										? tempMeasurements.backLength
-										: measurements?.backLength ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('backLength', v)
-								}
-							/>
+							{measurementsForm
+								.slice(
+									0,
+									Math.floor(measurementsForm.length / 2) + 1
+								)
+								.map((m, i) => (
+									<MeasurementField
+										key={i}
+										label={m}
+										editing={isEditing}
+										value={
+											isEditing
+												? _.get(
+														tempMeasurements,
+														measurementsTagMap[m],
+														0
+												  )
+												: _.get(
+														measurementData,
+														measurementsTagMap[m],
+														0
+												  )
+										}
+										onChange={(v) =>
+											handleMeasurementChange(
+												measurementsTagMap[m],
+												v
+											)
+										}
+									/>
+								))}
 						</div>
-
+						{/* Group 2 */}
 						<div className="space-y-3">
-							<MeasurementField
-								label="Sleeve Length (L)"
-								value={
-									isEditing
-										? tempMeasurements.sleeveLengthL
-										: measurements?.sleeveLengthL ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('sleeveLengthL', v)
-								}
-							/>
-							<MeasurementField
-								label="Sleeve Length (R)"
-								value={
-									isEditing
-										? tempMeasurements.sleeveLengthR
-										: measurements?.sleeveLengthR ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('sleeveLengthR', v)
-								}
-							/>
-							<MeasurementField
-								label="Pants Waist"
-								value={
-									isEditing
-										? tempMeasurements.pantsWaist
-										: measurements?.pantsWaist ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('pantsWaist', v)
-								}
-							/>
-							<MeasurementField
-								label="Thigh"
-								value={
-									isEditing
-										? tempMeasurements.thigh
-										: measurements?.thigh ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange('thigh', v)
-								}
-							/>
-							<MeasurementField
-								label="Waistcoat Back Length"
-								value={
-									isEditing
-										? tempMeasurements.waistcoatBackLength
-										: measurements?.waistcoatBackLength ?? 0
-								}
-								editing={isEditing}
-								onChange={(v) =>
-									handleMeasurementChange(
-										'waistcoatBackLength',
-										v
-									)
-								}
-							/>
+							{measurementsForm
+								.slice(
+									Math.floor(measurementsForm.length / 2) + 1
+								)
+								.map((m, i) => (
+									<MeasurementField
+										key={i}
+										label={m}
+										editing={isEditing}
+										value={
+											isEditing
+												? _.get(
+														tempMeasurements,
+														measurementsTagMap[m],
+														0
+												  )
+												: _.get(
+														measurementData,
+														measurementsTagMap[m],
+														0
+												  )
+										}
+										onChange={(v) =>
+											handleMeasurementChange(
+												measurementsTagMap[m],
+												v
+											)
+										}
+									/>
+								))}
 						</div>
 					</div>
 				</div>
@@ -288,7 +262,7 @@ function MeasurementField({
 }) {
 	return (
 		<div className="flex justify-between items-center">
-			<span className="text-gray-700">{label}</span>
+			<span className="text-gray-700 capitalize">{label}</span>
 			{editing ? (
 				<input
 					type="number"

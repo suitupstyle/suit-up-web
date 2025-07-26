@@ -8,16 +8,26 @@ import {
 	PresentationChartBarIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { useUIStore } from '../stores/uiStore'
-import { supabase } from '../lib/supabase/client'
+import { usePathname, useRouter } from 'next/navigation'
+import { useUIStore } from '@/app/stores/uiStore'
+import { useUserStore } from '@/app/stores/userStore'
+import { UserService } from '@/app/services/user.service'
+import { logger } from '@/app/lib/logger'
 
 export default function Sidebar() {
 	const pathname = usePathname()
 	const { closeMobileSidebar } = useUIStore()
+	const { user, setUser } = useUserStore()
+	const router = useRouter()
 
 	const handleLogout = async () => {
-		await supabase.auth.signOut()
+		try {
+			await UserService.logout()
+			setUser(null)
+			router.push('/')
+		} catch (error) {
+			logger.error('User logout error:', error as Error)
+		}
 	}
 
 	const navItems = [
@@ -58,9 +68,11 @@ export default function Sidebar() {
 						<UserIcon className="w-5 h-5" />
 					</div>
 					<div className="ml-3">
-						<p className="font-medium">Admin User</p>
+						<p className="font-medium">
+							{user?.user_metadata?.full_name ?? 'User Name'}
+						</p>
 						<p className="text-sm text-gray-500">
-							admin@example.com
+							{user?.email ?? 'user@example.com'}
 						</p>
 					</div>
 				</div>

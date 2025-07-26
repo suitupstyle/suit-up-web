@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase/client';
+import { supabase } from '@/app/lib/supabase/client';
 
 async function fetchProtectedData() {
   const { data: { session } } = await supabase.auth.getSession();

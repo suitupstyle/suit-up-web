@@ -2,8 +2,6 @@
 
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { supabase } from '../lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { useMutation } from '@tanstack/react-query'
 import {
@@ -12,7 +10,10 @@ import {
 	ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { LoginFormData, loginSchema } from '../lib/definitions'
+import { type AppUser, type LoginFormData } from '@/app/lib/definitions'
+import { LoginSchema } from '@/app/lib/schemas'
+import { UserService } from '@/app/services/user.service'
+import { useUserStore } from '@/app/stores/userStore'
 
 export default function LoginPage() {
 	const router = useRouter()
@@ -21,30 +22,15 @@ export default function LoginPage() {
 		handleSubmit,
 		formState: { errors },
 	} = useForm<LoginFormData>({
-		resolver: zodResolver(loginSchema),
+		resolver: zodResolver(LoginSchema),
 	})
+	const { setUser } = useUserStore()
 
 	const loginMutation = useMutation({
-		mutationFn: async (data: LoginFormData) => {
-			const {
-				data: { session },
-				error,
-			} = await supabase.auth.signInWithPassword({
-				email: data.email,
-				password: data.password,
-			})
-
-			if (error) throw error
-			return session
-		},
+		mutationFn: UserService.login,
 		onSuccess: (session) => {
-			if (session?.user) {
-				router.push(
-					session.user.user_metadata?.is_admin
-						? '/admin'
-						: '/dashboard'
-				)
-			}
+			setUser(session?.user as AppUser)
+			router.push(UserService.isAdmin(session) ? '/admin/dashboard' : '/')
 		},
 	})
 

@@ -3,36 +3,46 @@
 import { useMutation } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useItems } from './hooks/useItems'
-import { Items, PreorderResponse } from './lib/definitions'
-import { logger } from './lib/logger'
-import { OrdersService } from './services/orders.service'
-import { useOrderStore } from './stores/orderStore'
+import { useItems } from '@/app/hooks/useItems'
+import { type Item, type PreOrderResponse } from '@/app/lib/definitions'
+import { logger } from '@/app/lib/logger'
+import { PreOrdersService } from '@/app/services/preOrders.service'
+import { usePreOrderStore } from '@/app/stores/preOrderStore'
+import {
+	ArrowPathIcon,
+	CheckCircleIcon,
+	PhotoIcon,
+	XCircleIcon,
+} from '@heroicons/react/24/outline'
 
 export default function Page() {
 	const router = useRouter()
 
 	const { items } = useItems()
 
-	const { setPreorderId } = useOrderStore()
+	const { setId } = usePreOrderStore()
 
-	const { mutate: createPreorder } = useMutation<PreorderResponse, Error, Items[]>({
-		mutationFn: (items) => OrdersService.createPreorder({
-			itemIds: items.map(item => item.id),
-		}),
-		onSuccess: (data) => {
-			logger.log('Create data', data)
-			setPreorderId(data.id)
+	const {
+		mutate: createPreorder,
+		isPending,
+		isError,
+	} = useMutation<PreOrderResponse, Error, Item[]>({
+		mutationFn: (items) =>
+			PreOrdersService.createPreorder({
+				itemIds: items.map((item) => item.id),
+			}),
+		onSuccess: (response) => {
+			logger.log('Create data', response)
+			setId(response.data.id)
 			router.push(`/orders/instructions`)
 		},
 		onError: (error) => {
 			logger.error('Error:', error)
-			alert('Post request error.')
 		},
 	})
 
 	const onSubmit = () => {
-		createPreorder(items as Items[])
+		createPreorder(items as Item[])
 	}
 
 	return (
@@ -55,7 +65,19 @@ export default function Page() {
 					<button
 						onPointerDown={onSubmit}
 						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-radial-circle hover:from-gray-100 hover:to-gray-400 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg">
-						<span>Pre-Order Now</span>
+						{!isPending && !isError && <span>Pre-Order Now</span>}
+						{isPending && (
+							<span className="flex items-center gap-1">
+								<ArrowPathIcon className="w-5 h-5 animate-spin " />
+								Loading...
+							</span>
+						)}
+						{isError && (
+							<span className="flex items-center gap-1 text-red-700">
+								<XCircleIcon className="w-5 h-5" />
+								Error
+							</span>
+						)}
 					</button>
 					<button className="hidden lg:block absolute bottom-20 right-0 w-64 h-14 border border-white rounded-lg transition-colors ease-linear hover:bg-white hover:text-black">
 						Save My Style

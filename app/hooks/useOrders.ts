@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { AdminOrderService } from "../services/admin.service"
+import { AdminOrderService } from "@/app/services/admin.service"
 
 export const useOrders = () => {
   const {
