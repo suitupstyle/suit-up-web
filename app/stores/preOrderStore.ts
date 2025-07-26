@@ -28,5 +28,5 @@ export const usePreOrderStore = create<PreOrderStore>((set) => ({
   setSideImage: (sideImage) => set({ sideImage }),
   setMeasurements: ((measurementData) => set({ measurementData })),
   clearImages: () => set({ frontImage: null, sideImage: null }),
-  clearStore: () => set({ id: null, gender: null, height: null, weight: null, frontImage: null, sideImage: null }),
+  clearStore: () => set({ gender: null, height: null, weight: null, frontImage: null, sideImage: null, measurementData: undefined }),
 }))

@@ -16,7 +16,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useId, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
 
@@ -32,7 +32,13 @@ export default function Instructions() {
 		sideImage,
 		setSideImage,
 		setMeasurements,
+		clearStore,
 	} = usePreOrderStore()
+
+	useEffect(() => {
+		clearStore()
+	}, [])
+
 	logger.log('preorder id', { id })
 
 	const {
