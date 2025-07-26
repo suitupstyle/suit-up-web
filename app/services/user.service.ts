@@ -1,6 +1,8 @@
 import { Session } from "@supabase/supabase-js"
 import { type AppUser, type LoginFormData, type UserFormData } from "@/app/lib/definitions"
-import { supabase } from "@/app/lib/supabase/client"
+import { createClient } from "@/app/lib/supabase/client"
+
+const supabase = createClient()
 
 export const UserService = {
   signUp: async ({ email, password, full_name, is_admin = true }: UserFormData) => {

@@ -1,8 +1,10 @@
-// app/admin/layout.tsx
 'use client'
 
 import { useUIStore } from '@/app/stores/uiStore'
 import Sidebar from '@/app/ui/sidebar'
+import { useRouter } from 'next/navigation'
+import { useUserStore } from '@/app/stores/userStore'
+import { useEffect } from 'react'
 
 export default function AdminLayout({
 	children,
@@ -10,6 +12,20 @@ export default function AdminLayout({
 	children: React.ReactNode
 }) {
 	const { mobileSidebarOpen, closeMobileSidebar } = useUIStore()
+	const router = useRouter()
+	const { user } = useUserStore()
+
+	useEffect(() => {
+		if (!user) {
+			router.push('/auth')
+			return
+		}
+
+		const isAdmin = user.user_metadata?.is_admin === true
+		if (!isAdmin) {
+			router.push('/')
+		}
+	}, [user, router])
 
 	return (
 		<div className="flex h-screen">
