@@ -1,17 +1,12 @@
 'use client'
 
-import { type PreOrderFormData } from '@/app/lib/definitions'
-import { PreOrderSchema } from '@/app/lib/schemas'
-import { logger } from '@/app/lib/logger'
-import { PreOrdersService } from '@/app/services/preOrders.service'
-import { usePreOrderStore } from '@/app/stores/preOrderStore'
-import BackButton from '@/app/ui/back-button'
-import {
-	ArrowPathIcon,
-	CheckCircleIcon,
-	PhotoIcon,
-	XCircleIcon,
-} from '@heroicons/react/24/outline'
+import { type PreOrderFormData } from '@/lib/definitions'
+import { logger } from '@/lib/logger'
+import { PreOrderSchema } from '@/lib/schemas'
+import { PreOrdersService } from '@/services/preOrders.service'
+import { usePreOrderStore } from '@/stores/preOrderStore'
+import BackButton from '@/ui/back-button'
+import { ArrowPathIcon, CheckCircleIcon, PhotoIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'

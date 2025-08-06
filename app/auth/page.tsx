@@ -10,10 +10,10 @@ import {
 	ArrowPathIcon,
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { type AppUser, type LoginFormData } from '@/app/lib/definitions'
-import { LoginSchema } from '@/app/lib/schemas'
-import { UserService } from '@/app/services/user.service'
-import { useUserStore } from '@/app/stores/userStore'
+import { type AppUser, type LoginFormData } from '@/lib/definitions'
+import { LoginSchema } from '@/lib/schemas'
+import { UserService } from '@/services/user.service'
+import { useUserStore } from '@/stores/userStore'
 
 export default function LoginPage() {
 	const router = useRouter()

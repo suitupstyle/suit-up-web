@@ -10,15 +10,15 @@ import {
 	EyeIcon,
 	EyeSlashIcon,
 } from '@heroicons/react/24/outline'
-import BackButton from '@/app/ui/back-button'
+import BackButton from '@/ui/back-button'
 import { useRouter } from 'next/navigation'
 import { useState, useId } from 'react'
-import { logger } from '@/app/lib/logger'
-import { type UserFormData, type AppUser } from '@/app/lib/definitions'
-import { UserSchema } from '@/app/lib/schemas'
+import { logger } from '@/lib/logger'
+import { type UserFormData, type AppUser } from '@/lib/definitions'
+import { UserSchema } from '@/lib/schemas'
 import { useMutation } from '@tanstack/react-query'
-import { UserService } from '@/app/services/user.service'
-import { useUserStore } from '@/app/stores/userStore'
+import { UserService } from '@/services/user.service'
+import { useUserStore } from '@/stores/userStore'
 
 export default function Details() {
 	const {

@@ -1,6 +1,6 @@
-import { fetchClient } from "@/app/lib/api/client";
-import { handleApiError } from "@/app/lib/api/errorHandler";
-import { type ItemsResponse } from "@/app/lib/definitions";
+import { fetchClient } from "@/lib/api/client";
+import { handleApiError } from "@/lib/api/errorHandler";
+import { type ItemsResponse } from "@/lib/definitions";
 
 
 export const ItemsService = {

@@ -3,11 +3,11 @@
 import { useMutation } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useItems } from '@/app/hooks/useItems'
-import { type Item, type PreOrderResponse } from '@/app/lib/definitions'
-import { logger } from '@/app/lib/logger'
-import { PreOrdersService } from '@/app/services/preOrders.service'
-import { usePreOrderStore } from '@/app/stores/preOrderStore'
+import { useItems } from '@/hooks/useItems'
+import { type Item, type PreOrderResponse } from '@/lib/definitions'
+import { logger } from '@/lib/logger'
+import { PreOrdersService } from '@/services/preOrders.service'
+import { usePreOrderStore } from '@/stores/preOrderStore'
 import {
 	ArrowPathIcon,
 	CheckCircleIcon,
@@ -33,8 +33,9 @@ export default function Page() {
 			}),
 		onSuccess: (response) => {
 			logger.log('Create data', response)
+			const preorderId = response.data.id
 			setId(response.data.id)
-			router.push(`/orders/instructions`)
+			router.push(`/orders/${preorderId}/instructions`)
 		},
 		onError: (error) => {
 			logger.error('Error:', error)

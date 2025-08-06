@@ -9,10 +9,10 @@ import {
 } from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useUIStore } from '@/app/stores/uiStore'
-import { useUserStore } from '@/app/stores/userStore'
-import { UserService } from '@/app/services/user.service'
-import { logger } from '@/app/lib/logger'
+import { useUIStore } from '@/stores/uiStore'
+import { useUserStore } from '@/stores/userStore'
+import { UserService } from '@/services/user.service'
+import { logger } from '@/lib/logger'
 
 export default function Sidebar() {
 	const pathname = usePathname()

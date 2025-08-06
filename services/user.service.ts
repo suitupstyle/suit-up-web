@@ -1,6 +1,6 @@
 import { Session } from "@supabase/supabase-js"
-import { type AppUser, type LoginFormData, type UserFormData } from "@/app/lib/definitions"
-import { createClient } from "@/app/lib/supabase/client"
+import { type AppUser, type LoginFormData, type UserFormData } from "@/lib/definitions"
+import { createClient } from "@/lib/supabase/client"
 
 const supabase = createClient()
 

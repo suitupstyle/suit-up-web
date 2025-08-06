@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { measurementsTagMap } from '@/app/lib/utils';
+import { measurementsTagMap } from '@/lib/utils';
 import { type User, type UserMetadata } from '@supabase/supabase-js';
-import { LoginSchema, PaymentSchema, PreOrderSchema, UserSchema, UUIDSchema } from '@/app/lib/schemas';
+import { LoginSchema, PaymentSchema, PreOrderSchema, UserSchema, UUIDSchema } from '@/lib/schemas';
 
 export type UUID = z.infer<typeof UUIDSchema>;
 

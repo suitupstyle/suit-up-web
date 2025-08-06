@@ -1,4 +1,4 @@
-import { fetchMock } from '@/app/lib/api/client';
+import { fetchMock } from '@/lib/api/client';
 
 
 export const OrdersService = {

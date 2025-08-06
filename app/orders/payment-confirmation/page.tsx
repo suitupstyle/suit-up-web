@@ -2,8 +2,8 @@
 
 import Link from 'next/link'
 import { ArrowLeftIcon, ShareIcon } from '@heroicons/react/24/outline'
-import { usePaymentConfirmation } from '@/app/hooks/usePaymentConfirmation'
-import { logger } from '@/app/lib/logger'
+import { usePaymentConfirmation } from '@/hooks/usePaymentConfirmation'
+import { logger } from '@/lib/logger'
 
 export default function OrderConfirmation() {
 	const { data, isError, isLoading } = usePaymentConfirmation()

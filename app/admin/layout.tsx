@@ -1,9 +1,9 @@
 'use client'
 
-import { useUIStore } from '@/app/stores/uiStore'
-import Sidebar from '@/app/ui/sidebar'
+import { useUIStore } from '@/stores/uiStore'
+import Sidebar from '@/ui/sidebar'
 import { useRouter } from 'next/navigation'
-import { useUserStore } from '@/app/stores/userStore'
+import { useUserStore } from '@/stores/userStore'
 import { useEffect } from 'react'
 
 export default function AdminLayout({

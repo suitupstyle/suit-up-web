@@ -3,17 +3,17 @@
 import { useState } from 'react'
 import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import Link from 'next/link'
-import { usePreOrderStore } from '@/app/stores/preOrderStore'
-import BackButton from '@/app/ui/back-button'
+import { usePreOrderStore } from '@/stores/preOrderStore'
+import BackButton from '@/ui/back-button'
 import {
 	type MeasurementsTags,
 	type MeasurementData,
-} from '@/app/lib/definitions'
-import { PreOrdersService } from '@/app/services/preOrders.service'
+} from '@/lib/definitions'
+import { PreOrdersService } from '@/services/preOrders.service'
 import { useMutation } from '@tanstack/react-query'
 import _ from 'lodash'
-import { measurementsTagMap } from '@/app/lib/utils'
-import { logger } from '@/app/lib/logger'
+import { measurementsTagMap } from '@/lib/utils'
+import { logger } from '@/lib/logger'
 
 const measurementsForm: Array<MeasurementsTags> = Object.keys(
 	measurementsTagMap

@@ -1,4 +1,4 @@
-import { logger } from "@/app/lib/logger";
+import { logger } from "@/lib/logger";
 
 export const handleApiError = (error: Error, context: string) => {
   logger.error(`[API Error] ${context}:`, error);

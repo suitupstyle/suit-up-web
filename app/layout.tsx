@@ -1,4 +1,4 @@
-import '@/app/ui/global.css'
+import '@/ui/global.css'
 import { ReactQueryProviders } from './providers'
 
 export const metadata = {

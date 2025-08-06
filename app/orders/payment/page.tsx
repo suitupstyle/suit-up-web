@@ -11,18 +11,18 @@ import {
 	BuildingOfficeIcon,
 	ArrowPathIcon,
 } from '@heroicons/react/24/outline'
-import BackButton from '@/app/ui/back-button'
-import { logger } from '@/app/lib/logger'
+import BackButton from '@/ui/back-button'
+import { logger } from '@/lib/logger'
 import { useId } from 'react'
 import { useRouter } from 'next/navigation'
 import {
 	type PaymentFormData,
 	type PaymentResponse,
-} from '@/app/lib/definitions'
-import { PaymentSchema } from '@/app/lib/schemas'
-import { useOrderCost } from '@/app/hooks/useOrderCost'
+} from '@/lib/definitions'
+import { PaymentSchema } from '@/lib/schemas'
+import { useOrderCost } from '@/hooks/useOrderCost'
 import { useMutation } from '@tanstack/react-query'
-import { OrdersService } from '@/app/services/orders.service'
+import { OrdersService } from '@/services/orders.service'
 
 export default function Payment() {
 	const {

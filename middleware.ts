@@ -1,4 +1,4 @@
-import { adminAuthMiddleware } from './app/middleware/adminAuth.middleware'
+import { adminAuthMiddleware } from '@/middleware/adminAuth.middleware'
 import { NextRequest, NextResponse } from 'next/server'
 // import { logger } from './lib/logger'
 

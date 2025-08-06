@@ -1,4 +1,4 @@
-import Navbar from '@/app/ui/navbar'
+import Navbar from '@/ui/navbar'
 
 export default function OrdersLayout({
 	children,

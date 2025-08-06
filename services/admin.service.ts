@@ -1,6 +1,6 @@
-import { fetchMock } from "@/app/lib/api/client";
-import { handleApiError } from "@/app/lib/api/errorHandler";
-import { type OrderListResponse } from "@/app/lib/definitions";
+import { fetchMock } from "@/lib/api/client";
+import { handleApiError } from "@/lib/api/errorHandler";
+import { type OrderListResponse } from "@/lib/definitions";
 
 export const AdminOrderService = {
   getOrders: async () => {

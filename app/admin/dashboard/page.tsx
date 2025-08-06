@@ -2,7 +2,7 @@
 
 import { ArrowDownTrayIcon, ArrowPathIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
-import { useOrders } from '@/app/hooks/useOrders'
+import { useOrders } from '@/hooks/useOrders'
 
 export default function DashboardPage() {
 	const router = useRouter()

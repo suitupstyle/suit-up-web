@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
-import { ItemsService } from "@/app/services/items.service"
+import { ItemsService } from "@/services/items.service"
 
 export const useItems = () => {
   const {

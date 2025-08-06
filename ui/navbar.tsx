@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useUserStore } from '@/app/stores/userStore'
+import { useUserStore } from '@/stores/userStore'
 
 export default function Navbar() {
 	const { user } = useUserStore()
@@ -10,7 +10,7 @@ export default function Navbar() {
 		<nav className="w-full h-32 bg-black text-white shadow-gray-500 shadow-lg flex items-center px-5 relative z-10">
 			<ul className="flex justify-start items-center gap-2">
 				<li className="flex items-center font-bold w-auto h-11 px-4 rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-900 active:bg-gray-700">
-					<Link href={'/'}>Home</Link>
+					<Link href={'/public'}>Home</Link>
 				</li>
 				{user == null && (
 					<li className="flex items-center w-auto h-11 px-4 rounded-md transition-colors duration-300 ease-in-out hover:bg-gray-900 active:bg-gray-700">
