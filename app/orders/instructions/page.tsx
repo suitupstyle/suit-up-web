@@ -39,8 +39,6 @@ export default function Instructions() {
 		clearStore()
 	}, [])
 
-	logger.log('preorder id', { id })
-
 	const {
 		mutate,
 		isError,
