@@ -65,6 +65,10 @@ export default function Details() {
 	})
 
 	const onSubmit = async (data: UserFormData) => {
+		if (!preorderId) {
+			router.replace('/')
+			return
+		}
 		submitDetails(data)
 	}
 
