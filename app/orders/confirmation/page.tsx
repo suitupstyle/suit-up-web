@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
 import {
@@ -20,6 +20,7 @@ const measurementsForm: Array<MeasurementsTags> = Object.keys(
 ) as Array<MeasurementsTags>
 
 export default function Confirmation() {
+	const router = useRouter()
 	const {
 		id,
 		gender,
@@ -233,18 +234,16 @@ export default function Confirmation() {
 				</div>
 			</section>
 
-			<footer className="w-full mt-8">
-				<div className="w-full flex justify-end">
-					<Link
-						href="/orders/details"
-						className="w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg"
-						aria-disabled={
-							isEditing || isPending || (!isPending && !isSuccess)
-						}>
-						Confirm and Continue
-					</Link>
-				</div>
-			</footer>
+		<footer className="w-full mt-8">
+			<div className="w-full flex justify-end">
+				<button
+					onClick={() => router.push('/orders/details')}
+					disabled={isEditing || isPending}
+					className="w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out bg-black text-white border-black hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg disabled:bg-gray-300 disabled:text-gray-500 disabled:border-gray-300 disabled:cursor-not-allowed">
+					Confirm and Continue
+				</button>
+			</div>
+		</footer>
 		</div>
 	)
 }

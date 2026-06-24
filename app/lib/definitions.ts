@@ -14,10 +14,46 @@ export type AppUser = User & {
 
 export type Item = {
   id: number,
-  name: "Black Professional Business Suit",
+  name: string,
   desc: string
   price: number
   imageUrl?: string
+}
+
+export type CreateOrderDTO = {
+  preorderId: string
+  orderType: string
+  orderQuantity: number
+  orderLeadTime: number
+  customerName: string
+  customerEmail: string
+  customerPassword: string
+  jacketBook: string
+  jacketFabric: string
+}
+
+export type CreateOrderApiResponse = {
+  data: {
+    id: number
+    pricingData: {
+      currency: string
+      price: number
+    }
+    items: Item[]
+    isPaid: boolean
+  }
+}
+
+export type CreatePaymentIntentDTO = {
+  amount: number
+  currency?: 'usd' | 'cny'
+  orderId: number
+}
+
+export type CreatePaymentIntentApiResponse = {
+  data: {
+    clientSecret: string
+  }
 }
 
 export type ItemsResponse = {
