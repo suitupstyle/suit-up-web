@@ -1,14 +1,25 @@
-import { fetchMock } from '@/app/lib/api/client';
-
+import { fetchClient } from '@/app/lib/api/client'
+import type {
+  CreateOrderDTO,
+  CreateOrderApiResponse,
+  CreatePaymentIntentDTO,
+  CreatePaymentIntentApiResponse,
+} from '@/app/lib/definitions'
 
 export const OrdersService = {
-  getOrderCost: async () => {
-    return fetchMock('orderCost') // TODO: comment once endpoint is finished
+  createOrder: async (data: CreateOrderDTO): Promise<CreateOrderApiResponse> => {
+    return fetchClient('/orders', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
   },
-  postPayment: async (data: any) => {
-    return fetchMock('paymentResponse') // TODO: comment once endpoint is finished
+
+  createPaymentIntent: async (
+    data: CreatePaymentIntentDTO,
+  ): Promise<CreatePaymentIntentApiResponse> => {
+    return fetchClient('/payments/create-intent', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
   },
-  getPaymentConfirmation: async (data: any) => {
-    return fetchMock('paymentConfirmation') // TODO: comment once endpoint is finished
-  },
-};
+}

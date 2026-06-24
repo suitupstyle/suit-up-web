@@ -14,11 +14,12 @@ import BackButton from '@/app/ui/back-button'
 import { useRouter } from 'next/navigation'
 import { useState, useId } from 'react'
 import { logger } from '@/app/lib/logger'
-import { type UserFormData, type AppUser } from '@/app/lib/definitions'
+import { type UserFormData } from '@/app/lib/definitions'
 import { UserSchema } from '@/app/lib/schemas'
 import { useMutation } from '@tanstack/react-query'
-import { UserService } from '@/app/services/user.service'
-import { useUserStore } from '@/app/stores/userStore'
+import { OrdersService } from '@/app/services/orders.service'
+import { useOrderStore } from '@/app/stores/orderStore'
+import { usePreOrderStore } from '@/app/stores/preOrderStore'
 
 export default function Details() {
 	const {
@@ -33,17 +34,33 @@ export default function Details() {
 	const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
 		useState(false)
 	const detailsFormId = useId()
-	const { setUser } = useUserStore()
+	const { setOrder } = useOrderStore()
+	const { id: preorderId } = usePreOrderStore()
 
 	const { mutate: submitDetails, isError } = useMutation({
-		mutationFn: UserService.signUp,
-		onSuccess: (data) => {
-			logger.log('Form submitted:', data)
-			setUser(data as AppUser)
+		mutationFn: (data: UserFormData) =>
+			OrdersService.createOrder({
+				preorderId: preorderId as string,
+				customerName: data.full_name,
+				customerEmail: data.email,
+				customerPassword: data.password,
+				orderType: 'ABC',
+				orderQuantity: 1,
+				orderLeadTime: 1,
+				jacketBook: 'SUIT 2301',
+				jacketFabric: 'DBK053A',
+			}),
+		onSuccess: (response) => {
+			logger.log('Order created:', response)
+			setOrder(
+				response.data.id,
+				response.data.pricingData.price,
+				response.data.items,
+			)
 			router.push('/orders/payment')
 		},
 		onError: (error) => {
-			logger.error('User details error:', error)
+			logger.error('Order creation error:', error)
 		},
 	})
 
