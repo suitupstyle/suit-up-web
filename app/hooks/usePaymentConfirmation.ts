@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import { OrdersService } from "../services/orders.service"
-import { PaymentConfirmation } from "../lib/definitions"
+import { type PaymentConfirmation } from "@/app/lib/definitions"
+import { OrdersService } from "@/app/services/orders.service"
 
 export const usePaymentConfirmation = () => {
   const {

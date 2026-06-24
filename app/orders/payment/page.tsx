@@ -16,10 +16,10 @@ import { logger } from '@/app/lib/logger'
 import { useId } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-	PaymentFormData,
-	PaymentResponse,
-	paymentSchema,
+	type PaymentFormData,
+	type PaymentResponse,
 } from '@/app/lib/definitions'
+import { PaymentSchema } from '@/app/lib/schemas'
 import { useOrderCost } from '@/app/hooks/useOrderCost'
 import { useMutation } from '@tanstack/react-query'
 import { OrdersService } from '@/app/services/orders.service'
@@ -31,7 +31,7 @@ export default function Payment() {
 		watch,
 		formState: { errors, isSubmitting },
 	} = useForm<PaymentFormData>({
-		resolver: zodResolver(paymentSchema),
+		resolver: zodResolver(PaymentSchema),
 		defaultValues: {
 			paymentMethod: 'stripe',
 		},

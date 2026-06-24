@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query"
-import { OrdersService } from "../services/orders.service"
-import { OrderCost } from "../lib/definitions"
-import { logger } from "../lib/logger"
+import { type OrderCost } from "@/app/lib/definitions"
+import { OrdersService } from "@/app/services/orders.service"
 
 export const useOrderCost = () => {
   const {
