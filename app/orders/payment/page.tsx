@@ -15,6 +15,8 @@ import { logger } from '@/app/lib/logger'
 import { useOrderStore } from '@/app/stores/orderStore'
 import { OrdersService } from '@/app/services/orders.service'
 
+console.log('stripe key defined?', !!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+
 const stripePromise = loadStripe(
 	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 )
