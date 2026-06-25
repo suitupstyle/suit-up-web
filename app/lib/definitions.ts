@@ -44,13 +44,13 @@ export type CreateOrderApiResponse = {
   }
 }
 
-export type CreatePaymentIntentDTO = {
+export type CreateCheckoutSessionDTO = {
   amount: number
   currency?: 'usd' | 'cny'
   orderId: number
 }
 
-export type CreatePaymentIntentApiResponse = {
+export type CreateCheckoutSessionApiResponse = {
   data: {
     clientSecret: string
   }

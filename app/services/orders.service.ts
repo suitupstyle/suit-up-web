@@ -2,8 +2,8 @@ import { fetchClient } from '@/app/lib/api/client'
 import type {
   CreateOrderDTO,
   CreateOrderApiResponse,
-  CreatePaymentIntentDTO,
-  CreatePaymentIntentApiResponse,
+  CreateCheckoutSessionDTO,
+  CreateCheckoutSessionApiResponse,
 } from '@/app/lib/definitions'
 
 export const OrdersService = {
@@ -14,10 +14,10 @@ export const OrdersService = {
     })
   },
 
-  createPaymentIntent: async (
-    data: CreatePaymentIntentDTO,
-  ): Promise<CreatePaymentIntentApiResponse> => {
-    return fetchClient('/payments/create-intent', {
+  createCheckoutSession: async (
+    data: CreateCheckoutSessionDTO,
+  ): Promise<CreateCheckoutSessionApiResponse> => {
+    return fetchClient('/payments/create-checkout-session', {
       method: 'POST',
       body: JSON.stringify(data),
     })

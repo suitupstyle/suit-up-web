@@ -1,12 +1,19 @@
 'use client'
 
+import { Suspense } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { ArrowLeftIcon, ShareIcon } from '@heroicons/react/24/outline'
 import { useOrderStore } from '@/app/stores/orderStore'
 
 const TAX_RATE = 0.08
 
-export default function OrderConfirmation() {
+function OrderConfirmationContent() {
+	// Stripe appends ?session_id={CHECKOUT_SESSION_ID} after redirect
+	const searchParams = useSearchParams()
+	const sessionId = searchParams.get('session_id')
+
+	// Zustand store is only available when navigated client-side (no full redirect)
 	const { orderId, orderPrice, orderItems } = useOrderStore()
 
 	const subtotal = Number(orderPrice ?? 0)
@@ -48,18 +55,32 @@ export default function OrderConfirmation() {
 								{item?.name ?? 'Custom Suit'}
 							</h3>
 							<div className="text-sm flex flex-col gap-2">
-								<div className="w-full flex flex-col justify-start items-start gap-1">
-									<span className="text-gray-600">
-										Order ID:
-									</span>
-									<span>{orderId ?? '—'}</span>
-								</div>
-								<div className="w-full flex flex-col justify-start items-start gap-1">
-									<span className="text-gray-600">
-										Amount Paid:
-									</span>
-									<span>${amountPaid.toFixed(2)}</span>
-								</div>
+								{sessionId && (
+									<div className="w-full flex flex-col justify-start items-start gap-1">
+										<span className="text-gray-600">
+											Session ID:
+										</span>
+										<span className="break-all text-xs text-gray-500">
+											{sessionId}
+										</span>
+									</div>
+								)}
+								{orderId && (
+									<div className="w-full flex flex-col justify-start items-start gap-1">
+										<span className="text-gray-600">
+											Order ID:
+										</span>
+										<span>{orderId}</span>
+									</div>
+								)}
+								{orderPrice !== null && (
+									<div className="w-full flex flex-col justify-start items-start gap-1">
+										<span className="text-gray-600">
+											Amount Paid:
+										</span>
+										<span>${amountPaid.toFixed(2)}</span>
+									</div>
+								)}
 								<div className="w-full flex flex-col justify-start items-start gap-1">
 									<span className="text-gray-600">
 										Measurement Status:
@@ -95,5 +116,14 @@ export default function OrderConfirmation() {
 				</div>
 			</footer>
 		</div>
+	)
+}
+
+// useSearchParams requires Suspense boundary
+export default function OrderConfirmation() {
+	return (
+		<Suspense>
+			<OrderConfirmationContent />
+		</Suspense>
 	)
 }
