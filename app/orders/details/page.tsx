@@ -57,7 +57,7 @@ export default function Details() {
 				response.data.pricingData.price,
 				response.data.items,
 			)
-			router.push('/orders/payment')
+			router.push('/orders/checkout')
 		},
 		onError: (error) => {
 			logger.error('Order creation error:', error)
