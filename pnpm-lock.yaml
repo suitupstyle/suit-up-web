@@ -71,6 +71,9 @@ importers:
       react-hook-form:
         specifier: ^7.59.0
         version: 7.59.0(react@19.1.0)
+      stripe:
+        specifier: ^22.3.0
+        version: 22.3.0(@types/node@22.10.7)
       tailwindcss:
         specifier: 3.4.17
         version: 3.4.17
@@ -1161,6 +1164,15 @@ packages:
     resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
     engines: {node: '>=12'}
 
+  stripe@22.3.0:
+    resolution: {integrity: sha512-ypO6xjVrMWs9SmIMeHr8naCx3dAQ0clxMdUTxn7Ejd7hmY9meBGfE+N4pVHkf9sUNebAHp6uJo6mV3GxDIc2cA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      '@types/node': '>=18'
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+
   styled-jsx@5.1.6:
     resolution: {integrity: sha512-qSVyDTeMotdvQYoHWLNGwRFJHC+i+ZvdBRYosOFgC+Wg1vx4frN2/RG/NA7SYqqvKNLf39P2LSRA2pu6n0XYZA==}
     engines: {node: '>= 12.0.0'}
@@ -2239,6 +2251,10 @@ snapshots:
   strip-ansi@7.1.0:
     dependencies:
       ansi-regex: 6.1.0
+
+  stripe@22.3.0(@types/node@22.10.7):
+    optionalDependencies:
+      '@types/node': 22.10.7
 
   styled-jsx@5.1.6(react@19.1.0):
     dependencies:
