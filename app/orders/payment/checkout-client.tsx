@@ -18,7 +18,7 @@ const stripePromise = loadStripe(
 	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 )
 
-const TAX_RATE = Number(process.env.NEXT_PUBLIC_TAX_RATE ?? 0.8);
+const TAX_RATE = Number(process.env.NEXT_PUBLIC_TAX_RATE ?? 0.08);
 
 export default function CheckoutClient() {
 	const { orderId, orderPrice } = useOrderStore()
@@ -36,7 +36,7 @@ export default function CheckoutClient() {
 			return
 		}
 
-		OrdersService.createPaymentIntent({ amount: total, orderId })
+		OrdersService.createPaymentIntent({ amount: Math.round(total * 100), orderId })
 			.then((res) => setClientSecret(res.data.clientSecret))
 			.catch(() => setFetchError('Unable to initialize payment. Please try again.'))
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,7 +178,7 @@ function CheckoutForm() {
 		const { error: stripeError } = await stripe.confirmPayment({
 			elements,
 			confirmParams: {
-				return_url: `${window.location.origin}/sample/checkout-v2/success`,
+				return_url: `${window.location.origin}/orders/payment-confirmation`,
 			},
 		})
 

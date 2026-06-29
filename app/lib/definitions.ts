@@ -44,18 +44,6 @@ export type CreateOrderApiResponse = {
   }
 }
 
-export type CreateCheckoutSessionDTO = {
-  amount: number
-  currency?: 'usd' | 'cny'
-  orderId: number
-}
-
-export type CreateCheckoutSessionApiResponse = {
-  data: {
-    clientSecret: string
-  }
-}
-
 export type CreatePaymentIntentDTO = {
   amount: number
   currency?: 'usd' | 'cny'
