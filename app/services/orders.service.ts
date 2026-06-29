@@ -4,6 +4,8 @@ import type {
   CreateOrderApiResponse,
   CreateCheckoutSessionDTO,
   CreateCheckoutSessionApiResponse,
+  CreatePaymentIntentDTO,
+  CreatePaymentIntentApiResponse,
 } from '@/app/lib/definitions'
 
 export const OrdersService = {
@@ -18,6 +20,15 @@ export const OrdersService = {
     data: CreateCheckoutSessionDTO,
   ): Promise<CreateCheckoutSessionApiResponse> => {
     return fetchClient('/payments/create-checkout-session', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+
+  createPaymentIntent: async (
+    data: CreatePaymentIntentDTO,
+  ): Promise<CreatePaymentIntentApiResponse> => {
+    return fetchClient('/payments/create-payment-intent', {
       method: 'POST',
       body: JSON.stringify(data),
     })

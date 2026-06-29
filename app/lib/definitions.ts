@@ -56,6 +56,18 @@ export type CreateCheckoutSessionApiResponse = {
   }
 }
 
+export type CreatePaymentIntentDTO = {
+  amount: number
+  currency?: 'usd' | 'cny'
+  orderId: number
+}
+
+export type CreatePaymentIntentApiResponse = {
+  data: {
+    clientSecret: string
+  }
+}
+
 export type ItemsResponse = {
   data: Item[],
   meta: {
