@@ -64,7 +64,6 @@ export default function CheckoutClient() {
 	}
 
 	return (
-		<>
 		<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-between items-center text-center relative">
 			<BackButton href="/orders/details" />
 			<header className="w-full">
@@ -105,60 +104,6 @@ export default function CheckoutClient() {
 				<CheckoutForm />
 			</Elements>
 		</div>
-
-
-
-
-
-
-		{/*<div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">*/}
-		{/*	<div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 space-y-6">*/}
-		{/*		<div className="text-center space-y-1">*/}
-		{/*			<span className="text-xs font-semibold uppercase tracking-widest text-gray-400">*/}
-		{/*				Sample Integration Test – v2 (Payment Intent)*/}
-		{/*			</span>*/}
-		{/*			<h1 className="text-2xl font-bold text-gray-900">*/}
-		{/*				Complete your payment*/}
-		{/*			</h1>*/}
-		{/*		</div>*/}
-
-		{/*		<div className="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">*/}
-		{/*			<div className="flex justify-between text-gray-600">*/}
-		{/*				<span>Custom Tailored Suit</span>*/}
-		{/*				<span>${PRICE.toFixed(2)}</span>*/}
-		{/*			</div>*/}
-		{/*			<div className="border-t border-gray-200 pt-2 flex justify-between font-bold text-gray-900">*/}
-		{/*				<span>Total</span>*/}
-		{/*				<span>${PRICE.toFixed(2)} USD</span>*/}
-		{/*			</div>*/}
-		{/*		</div>*/}
-
-		{/*		<Elements*/}
-		{/*			stripe={stripePromise}*/}
-		{/*			options={{*/}
-		{/*				clientSecret,*/}
-		{/*				appearance: {*/}
-		{/*					theme: 'stripe',*/}
-		{/*					variables: {*/}
-		{/*						colorPrimary: '#000000',*/}
-		{/*						borderRadius: '8px',*/}
-		{/*						fontFamily: 'inherit',*/}
-		{/*					},*/}
-		{/*				},*/}
-		{/*			}}>*/}
-		{/*			<CheckoutForm />*/}
-		{/*		</Elements>*/}
-
-		{/*		<p className="text-center text-xs text-gray-400">*/}
-		{/*			Test card:{' '}*/}
-		{/*			<code className="bg-gray-100 px-1 py-0.5 rounded">*/}
-		{/*				4242 4242 4242 4242*/}
-		{/*			</code>{' '}*/}
-		{/*			· any future date · any CVC*/}
-		{/*		</p>*/}
-		{/*	</div>*/}
-		{/*</div>*/}
-		</>
 	)
 }
 
@@ -166,6 +111,7 @@ function CheckoutForm() {
 	const stripe = useStripe()
 	const elements = useElements()
 	const [isSubmitting, setIsSubmitting] = useState(false)
+	const [isComplete, setIsComplete] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -194,20 +140,23 @@ function CheckoutForm() {
 
 	return (
 		<form onSubmit={handleSubmit} className="space-y-5">
-			<PaymentElement options={{ layout: 'tabs' }} />
+			<PaymentElement
+				options={{ layout: 'tabs' }}
+				onChange={(e) => setIsComplete(e.complete)}
+			/>
 
 			{error && (
 				<p className="text-sm text-red-600 text-center">{error}</p>
 			)}
 
-			<button
-				type="submit"
-				disabled={isSubmitting || !stripe || !elements}
-				className={`w-full px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all font-semibold ${
-					isSubmitting || !stripe || !elements
-						? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
-						: 'bg-black text-white hover:bg-gray-800'
-				}`}>
+		<button
+			type="submit"
+			disabled={isSubmitting || !stripe || !elements || !isComplete}
+			className={`w-full px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all font-semibold ${
+				isSubmitting || !stripe || !elements || !isComplete
+					? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
+					: 'bg-black text-white hover:bg-gray-800'
+			}`}>
 				{isSubmitting ? (
 					<>
 						<ArrowPathIcon className="animate-spin h-5 w-5" />

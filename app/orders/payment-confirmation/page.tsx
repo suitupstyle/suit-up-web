@@ -1,10 +1,11 @@
 'use client'
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { ArrowLeftIcon, ShareIcon } from '@heroicons/react/24/outline'
+import { ArrowLeftIcon, ArrowDownTrayIcon, ShareIcon } from '@heroicons/react/24/outline'
 import { useOrderStore } from '@/app/stores/orderStore'
+import { createClient } from '@/app/lib/supabase/client'
 
 const TAX_RATE = 0.08
 
@@ -15,6 +16,21 @@ function OrderConfirmationContent() {
 
 	// Zustand store is only available when navigated client-side (no full redirect)
 	const { orderId, orderPrice, orderItems } = useOrderStore()
+
+	const [excelUrl, setExcelUrl] = useState<string | null>(null)
+
+	useEffect(() => {
+		if (!orderId) return
+		const supabase = createClient()
+		supabase
+			.from('orders')
+			.select('excel_url')
+			.eq('id', orderId)
+			.single()
+			.then(({ data }) => {
+				if (data?.excel_url) setExcelUrl(data.excel_url)
+			})
+	}, [orderId])
 
 	const subtotal = Number(orderPrice ?? 0)
 	const amountPaid = subtotal * (1 + TAX_RATE)
@@ -98,23 +114,33 @@ function OrderConfirmationContent() {
 				</div>
 			</section>
 
-			<footer className="w-full">
-				<div className="w-full flex flex-col md:flex-row justify-between items-center gap-4">
-					<Link
-						href="/"
-						className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg border-2 border-black bg-white text-black transition-all hover:bg-gray-100">
-						<ArrowLeftIcon className="w-5 h-5" />
-						<span>Back to Home</span>
-					</Link>
+		<footer className="w-full">
+			<div className="w-full flex flex-col md:flex-row justify-between items-center gap-4">
+				<Link
+					href="/"
+					className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg border-2 border-black bg-white text-black transition-all hover:bg-gray-100">
+					<ArrowLeftIcon className="w-5 h-5" />
+					<span>Back to Home</span>
+				</Link>
 
-					<button
-						className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-black text-white transition-all hover:bg-gray-800 hover:tracking-widest"
-						onClick={() => alert('Sharing feature coming soon!')}>
-						<ShareIcon className="w-5 h-5" />
-						<span>Share with a friend</span>
-					</button>
-				</div>
-			</footer>
+				{excelUrl && (
+					<a
+						href={excelUrl}
+						download
+						className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg border-2 border-black bg-white text-black transition-all hover:bg-gray-100">
+						<ArrowDownTrayIcon className="w-5 h-5" />
+						<span>Download Measurements</span>
+					</a>
+				)}
+
+				<button
+					className="w-full md:w-auto flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-black text-white transition-all hover:bg-gray-800 hover:tracking-widest"
+					onClick={() => alert('Sharing feature coming soon!')}>
+					<ShareIcon className="w-5 h-5" />
+					<span>Share with a friend</span>
+				</button>
+			</div>
+		</footer>
 		</div>
 	)
 }
