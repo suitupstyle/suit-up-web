@@ -44,7 +44,7 @@ A Next.js application for a bespoke suit manufacturing business that integrates 
 - `NEXT_PUBLIC_API_URL`: API base url.
 - `NEXT_PUBLIC_ENV`: Environment for development, staging, or production.
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project's url.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` : Supabase project's anon key (Secure for frontend).
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` : Supabase project's publishable key (Secure for frontend).
 
 ## Production Build
 ```bash
