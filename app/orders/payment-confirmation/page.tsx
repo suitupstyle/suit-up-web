@@ -7,15 +7,18 @@ import { ArrowLeftIcon, ArrowDownTrayIcon, ShareIcon } from '@heroicons/react/24
 import { useOrderStore } from '@/app/stores/orderStore'
 import { createClient } from '@/app/lib/supabase/client'
 
-const TAX_RATE = 0.08
+const TAX_RATE = Number(process.env.NEXT_PUBLIC_TAX_RATE ?? 0.08)
 
 function OrderConfirmationContent() {
-	// Stripe appends ?session_id={CHECKOUT_SESSION_ID} after redirect
 	const searchParams = useSearchParams()
-	const sessionId = searchParams.get('session_id')
+	const orderIdFromQuery = Number(searchParams.get('orderId'))
 
-	// Zustand store is only available when navigated client-side (no full redirect)
-	const { orderId, orderPrice, orderItems } = useOrderStore()
+	const { orderId: storedOrderId, orderPrice, orderItems } = useOrderStore()
+	const orderId =
+		storedOrderId ??
+		(Number.isInteger(orderIdFromQuery) && orderIdFromQuery > 0
+			? orderIdFromQuery
+			: null)
 
 	const [excelUrl, setExcelUrl] = useState<string | null>(null)
 
@@ -71,16 +74,6 @@ function OrderConfirmationContent() {
 								{item?.name ?? 'Custom Suit'}
 							</h3>
 							<div className="text-sm flex flex-col gap-2">
-								{sessionId && (
-									<div className="w-full flex flex-col justify-start items-start gap-1">
-										<span className="text-gray-600">
-											Session ID:
-										</span>
-										<span className="break-all text-xs text-gray-500">
-											{sessionId}
-										</span>
-									</div>
-								)}
 								{orderId && (
 									<div className="w-full flex flex-col justify-start items-start gap-1">
 										<span className="text-gray-600">

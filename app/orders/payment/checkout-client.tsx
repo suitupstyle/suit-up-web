@@ -4,31 +4,29 @@ import { useOrderStore } from "@/app/stores/orderStore";
 import { OrdersService } from "@/app/services/orders.service";
 import BackButton from "@/app/ui/back-button";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from 'react'
-import { loadStripe } from '@stripe/stripe-js'
-import {
-	Elements,
-	PaymentElement,
-	useStripe,
-	useElements,
-} from '@stripe/react-stripe-js'
-import { ArrowPathIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
-
-const stripePromise = loadStripe(
-	process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
-)
+import { useEffect, useRef, useState } from 'react'
+import { ArrowPathIcon } from '@heroicons/react/24/outline'
+import { initAirwallex } from '@/app/lib/airwallex'
 
 const TAX_RATE = Number(process.env.NEXT_PUBLIC_TAX_RATE ?? 0.08);
+const DROP_IN_CONTAINER_ID = 'airwallex-drop-in'
+
+type CheckoutIntent = {
+	intentId: string
+	clientSecret: string
+	currency: string
+}
 
 export default function CheckoutClient() {
 	const { orderId, orderPrice } = useOrderStore()
 	const router = useRouter()
-	const [clientSecret, setClientSecret] = useState<string | null>(null)
+	const [intent, setIntent] = useState<CheckoutIntent | null>(null)
 	const [fetchError, setFetchError] = useState<string | null>(null)
 
 	const subtotal = Number(orderPrice ?? 0)
 	const taxes = subtotal * TAX_RATE;
 	const total = subtotal + taxes
+	const taxPercent = Math.round(TAX_RATE * 100)
 
 	useEffect(() => {
 		if (!orderId || !orderPrice) {
@@ -36,8 +34,8 @@ export default function CheckoutClient() {
 			return
 		}
 
-		OrdersService.createPaymentIntent({ amount: Math.round(total * 100), orderId })
-			.then((res) => setClientSecret(res.data.clientSecret))
+		OrdersService.createPaymentIntent({ orderId })
+			.then((res) => setIntent(res.data))
 			.catch(() => setFetchError('Unable to initialize payment. Please try again.'))
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
@@ -55,7 +53,7 @@ export default function CheckoutClient() {
 		)
 	}
 
-	if (!clientSecret) {
+	if (!intent || !orderId) {
 		return (
 			<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex justify-center items-center">
 				<ArrowPathIcon className="animate-spin h-8 w-8 text-gray-500" />
@@ -72,14 +70,13 @@ export default function CheckoutClient() {
 				</h1>
 			</header>
 
-			{/* Order Summary */}
 			<div className="border-t border-gray-300 pt-4 space-y-2 w-full">
 				<div className="flex justify-center gap-2">
 					<span className="font-bold">Subtotal:</span>
 					<span>${subtotal.toFixed(2)}</span>
 				</div>
 				<div className="flex justify-center gap-2">
-					<span className="font-bold">Taxes (8%):</span>
+					<span className="font-bold">Taxes ({taxPercent}%):</span>
 					<span>${taxes.toFixed(2)}</span>
 				</div>
 				<div className="flex justify-center gap-2 font-black text-lg border-t border-gray-300 pt-2 mt-2">
@@ -88,87 +85,92 @@ export default function CheckoutClient() {
 				</div>
 			</div>
 
-			<Elements
-				stripe={stripePromise}
-				options={{
-					clientSecret,
-					appearance: {
-						theme: 'stripe',
-						variables: {
-							colorPrimary: '#000000',
-							borderRadius: '8px',
-							fontFamily: 'inherit',
-						},
-					},
-				}}>
-				<CheckoutForm />
-			</Elements>
+			<DropInCheckout
+				orderId={orderId}
+				intent={intent}
+			/>
 		</div>
 	)
 }
 
-function CheckoutForm() {
-	const stripe = useStripe()
-	const elements = useElements()
-	const [isSubmitting, setIsSubmitting] = useState(false)
-	const [isComplete, setIsComplete] = useState(false)
+function DropInCheckout({
+	orderId,
+	intent,
+}: {
+	orderId: number
+	intent: CheckoutIntent
+}) {
+	const router = useRouter()
+	const [isReady, setIsReady] = useState(false)
 	const [error, setError] = useState<string | null>(null)
+	const elementRef = useRef<{ unmount: () => void; destroy: () => void } | null>(null)
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault()
-		if (!stripe || !elements) return
+	useEffect(() => {
+		let cancelled = false
 
-		setIsSubmitting(true)
-		setError(null)
+		const mountDropIn = async () => {
+			try {
+				await initAirwallex()
+				if (cancelled) return
 
-		const { error: stripeError } = await stripe.confirmPayment({
-			elements,
-			confirmParams: {
-				return_url: `${window.location.origin}/orders/payment-confirmation`,
-			},
-		})
+				const { createElement } = await import('@airwallex/components-sdk')
+				const element = await createElement('dropIn', {
+					intent_id: intent.intentId,
+					client_secret: intent.clientSecret,
+					currency: intent.currency,
+					country_code: 'US',
+					appearance: {
+						mode: 'light',
+						variables: {
+							colorBrand: '#000000',
+						},
+					},
+				})
 
-		// confirmPayment only returns an error if it fails before redirecting.
-		// On success, Stripe redirects to return_url automatically.
-		if (stripeError) {
-			setError(
-				stripeError.message ?? 'Payment failed. Please try again.',
-			)
-			setIsSubmitting(false)
+				if (cancelled) {
+					element.destroy()
+					return
+				}
+
+				elementRef.current = element
+				element.mount(DROP_IN_CONTAINER_ID)
+				element.on('ready', () => setIsReady(true))
+				element.on('success', () => {
+					router.push(`/orders/payment-confirmation?orderId=${orderId}`)
+				})
+				element.on('error', (event) => {
+					setError(
+						event.detail.error.message ?? 'Payment failed. Please try again.',
+					)
+				})
+			} catch {
+				if (!cancelled) {
+					setError('Unable to load payment form. Please try again.')
+				}
+			}
 		}
-	}
+
+		void mountDropIn()
+
+		return () => {
+			cancelled = true
+			elementRef.current?.unmount()
+			elementRef.current?.destroy()
+			elementRef.current = null
+		}
+	}, [intent.clientSecret, intent.currency, intent.intentId, orderId, router])
 
 	return (
-		<form onSubmit={handleSubmit} className="space-y-5">
-			<PaymentElement
-				options={{ layout: 'tabs' }}
-				onChange={(e) => setIsComplete(e.complete)}
-			/>
-
+		<div className="w-full space-y-4">
+			{!isReady && !error && (
+				<div className="flex justify-center py-8">
+					<ArrowPathIcon className="animate-spin h-8 w-8 text-gray-500" />
+				</div>
+			)}
+			<div id={DROP_IN_CONTAINER_ID} className="w-full text-left" />
 			{error && (
 				<p className="text-sm text-red-600 text-center">{error}</p>
 			)}
-
-		<button
-			type="submit"
-			disabled={isSubmitting || !stripe || !elements || !isComplete}
-			className={`w-full px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all font-semibold ${
-				isSubmitting || !stripe || !elements || !isComplete
-					? 'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300'
-					: 'bg-black text-white hover:bg-gray-800'
-			}`}>
-				{isSubmitting ? (
-					<>
-						<ArrowPathIcon className="animate-spin h-5 w-5" />
-						Processing…
-					</>
-				) : (
-					<>
-						<CheckCircleIcon className="h-5 w-5" />
-						Pay $99.00
-					</>
-				)}
-			</button>
-		</form>
+		</div>
 	)
 }

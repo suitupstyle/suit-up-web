@@ -45,14 +45,15 @@ export type CreateOrderApiResponse = {
 }
 
 export type CreatePaymentIntentDTO = {
-  amount: number
   currency?: 'usd' | 'cny'
   orderId: number
 }
 
 export type CreatePaymentIntentApiResponse = {
   data: {
+    intentId: string
     clientSecret: string
+    currency: string
   }
 }
 
