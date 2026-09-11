@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { measurementsTagMap } from '@/app/lib/utils';
 import { type User, type UserMetadata } from '@supabase/supabase-js';
-import { LoginSchema, PaymentSchema, PreOrderSchema, UserSchema, UUIDSchema } from '@/app/lib/schemas';
+import { LoginSchema, PreOrderSchema, UserSchema, UUIDSchema } from '@/app/lib/schemas';
 
 export type UUID = z.infer<typeof UUIDSchema>;
 
@@ -213,7 +213,8 @@ export type DetailsResponse = {
 }
 
 
-export type PaymentFormData = z.infer<typeof PaymentSchema>
+
+
 
 export type OrderCost = {
   cost: number,
