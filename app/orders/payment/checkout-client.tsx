@@ -3,10 +3,12 @@
 import { useOrderStore } from "@/app/stores/orderStore";
 import { OrdersService } from "@/app/services/orders.service";
 import BackButton from "@/app/ui/back-button";
+import StepAlert from "@/app/ui/step-alert";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from 'react'
 import { ArrowPathIcon } from '@heroicons/react/24/outline'
 import { initAirwallex } from '@/app/lib/airwallex'
+import { getErrorMessage } from '@/app/lib/api/errorHandler'
 
 const TAX_RATE = Number(process.env.NEXT_PUBLIC_TAX_RATE ?? 0.08);
 const DROP_IN_CONTAINER_ID = 'airwallex-drop-in'
@@ -85,14 +87,18 @@ export default function CheckoutClient() {
 
 		OrdersService.createPaymentIntent({ orderId })
 			.then((res) => setIntent(res.data))
-			.catch(() => setFetchError('Unable to initialize payment. Please try again.'))
+			.catch((err) =>
+				setFetchError(
+					getErrorMessage(err, 'Unable to initialize payment. Please try again.'),
+				),
+			)
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	if (fetchError) {
 		return (
-			<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-center items-center text-center">
-				<p className="text-red-600 font-semibold">{fetchError}</p>
+			<div className="w-64 md:w-458 lg:w-856 mx-auto min-h-[calc(100lvh-160px)] flex flex-col justify-center items-center text-center gap-4">
+				<StepAlert>{fetchError}</StepAlert>
 				<button
 					onClick={() => router.replace('/orders/details')}
 					className="mt-4 px-6 py-2 rounded-lg border-2 border-black bg-black text-white hover:bg-gray-800 font-semibold transition-all">
@@ -247,7 +253,9 @@ function DropInCheckout({
 				className="w-full min-h-[240px] text-left"
 			/>
 			{error && (
-				<p className="mt-3 text-sm text-red-600">{error}</p>
+				<div className="mt-3">
+					<StepAlert>{error}</StepAlert>
+				</div>
 			)}
 		</div>
 	)
