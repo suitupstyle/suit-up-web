@@ -9,7 +9,9 @@ import {
 	LockClosedIcon,
 	ArrowPathIcon,
 } from '@heroicons/react/24/outline'
+import StepAlert from '@/app/ui/step-alert'
 import Link from 'next/link'
+import { getErrorMessage } from '@/app/lib/api/errorHandler'
 import { type AppUser, type LoginFormData } from '@/app/lib/definitions'
 import { LoginSchema } from '@/app/lib/schemas'
 import { UserService } from '@/app/services/user.service'
@@ -95,11 +97,12 @@ export default function LoginPage() {
 				</div>
 
 				{loginMutation.isError && (
-					<div className="p-3 bg-red-50 text-red-600 rounded-lg text-sm">
-						{loginMutation.error instanceof Error
-							? loginMutation.error.message
-							: 'Authentication failed'}
-					</div>
+					<StepAlert>
+						{getErrorMessage(
+							loginMutation.error,
+							'Authentication failed',
+						)}
+					</StepAlert>
 				)}
 
 				<button

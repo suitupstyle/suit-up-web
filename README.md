@@ -45,6 +45,8 @@ A Next.js application for a bespoke suit manufacturing business that integrates 
 - `NEXT_PUBLIC_ENV`: Environment for development, staging, or production.
 - `NEXT_PUBLIC_SUPABASE_URL`: Supabase project's url.
 - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` : Supabase project's publishable key (Secure for frontend).
+- `NEXT_PUBLIC_AIRWALLEX_ENV`: Airwallex Drop-in environment (`demo` for sandbox, `prod` for live).
+- `NEXT_PUBLIC_TAX_RATE`: Tax rate shown on checkout (must match the API `TAX_RATE`, default `0.08`).
 
 ## Production Build
 ```bash
