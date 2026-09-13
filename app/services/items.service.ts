@@ -24,6 +24,7 @@ export const ItemsService = {
       };
     } catch (error) {
       handleApiError(error as Error, 'Failed to fetch items');
+      throw error
     }
   },
 };

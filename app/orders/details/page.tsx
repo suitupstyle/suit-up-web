@@ -11,9 +11,11 @@ import {
 	EyeSlashIcon,
 } from '@heroicons/react/24/outline'
 import BackButton from '@/app/ui/back-button'
+import StepAlert from '@/app/ui/step-alert'
 import { useRouter } from 'next/navigation'
 import { useState, useId } from 'react'
 import { logger } from '@/app/lib/logger'
+import { getErrorMessage } from '@/app/lib/api/errorHandler'
 import { type UserFormData } from '@/app/lib/definitions'
 import { UserSchema } from '@/app/lib/schemas'
 import { useMutation } from '@tanstack/react-query'
@@ -37,7 +39,7 @@ export default function Details() {
 	const { setOrder } = useOrderStore()
 	const { id: preorderId } = usePreOrderStore()
 
-	const { mutate: submitDetails, isError } = useMutation({
+	const { mutate: submitDetails, isError, error: submitError, isPending } = useMutation({
 		mutationFn: (data: UserFormData) =>
 			OrdersService.createOrder({
 				preorderId: preorderId as string,
@@ -241,18 +243,29 @@ export default function Details() {
 				</div>
 			</form>
 
+			{isError && (
+				<div className="w-full max-w-md">
+					<StepAlert>
+						{getErrorMessage(
+							submitError,
+							'Unable to create your order. Please try again.',
+						)}
+					</StepAlert>
+				</div>
+			)}
+
 			<footer className="w-full">
 				<div className="w-full flex justify-center">
 					<button
 						type="submit"
 						form={detailsFormId}
-						disabled={isSubmitting}
+						disabled={isSubmitting || isPending}
 						className={`w-full max-w-md px-6 py-3 rounded-lg border-2 border-black flex items-center justify-center gap-2 transition-all ${
-							isSubmitting
+							isSubmitting || isPending
 								? 'bg-gray-300 text-gray-500 cursor-not-allowed'
 								: 'bg-black text-white hover:bg-radial-circle hover:from-gray-700 hover:to-gray-900 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg'
 						}`}>
-						{isSubmitting ? (
+						{isSubmitting || isPending ? (
 							<>
 								<ArrowPathIcon className="animate-spin h-5 w-5 text-gray-500" />
 								Processing...

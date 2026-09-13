@@ -5,6 +5,7 @@ import { PhotoIcon, CheckCircleIcon } from '@heroicons/react/24/outline'
 import { useRouter } from 'next/navigation'
 import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
+import StepAlert from '@/app/ui/step-alert'
 import {
 	type MeasurementsTags,
 	type MeasurementData,
@@ -13,6 +14,7 @@ import { PreOrdersService } from '@/app/services/preOrders.service'
 import { useMutation } from '@tanstack/react-query'
 import _ from 'lodash'
 import { measurementsTagMap } from '@/app/lib/utils'
+import { getErrorMessage } from '@/app/lib/api/errorHandler'
 import { logger } from '@/app/lib/logger'
 
 const measurementsForm: Array<MeasurementsTags> = Object.keys(
@@ -35,12 +37,13 @@ export default function Confirmation() {
 	const {
 		mutate: mutateMeasurements,
 		isError,
+		error: saveError,
 		isPending,
-		isSuccess,
 	} = useMutation({
 		mutationFn: PreOrdersService.updateMeasurements,
-		onSuccess: () => {},
-		onError: () => {},
+		onError: (err) => {
+			logger.error('Measurement save error:', err)
+		},
 	})
 
 	const [isEditing, setIsEditing] = useState(false)
@@ -233,6 +236,17 @@ export default function Confirmation() {
 					</div>
 				</div>
 			</section>
+
+			{isError && (
+				<div className="w-full mt-4">
+					<StepAlert>
+						{getErrorMessage(
+							saveError,
+							'Unable to save measurements. Please try again.',
+						)}
+					</StepAlert>
+				</div>
+			)}
 
 		<footer className="w-full mt-8">
 			<div className="w-full flex justify-end">

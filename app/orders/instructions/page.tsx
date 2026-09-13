@@ -2,23 +2,26 @@
 
 import { type PreOrderFormData } from '@/app/lib/definitions'
 import { PreOrderSchema } from '@/app/lib/schemas'
+import { getErrorMessage, getValidationErrors } from '@/app/lib/api/errorHandler'
 import { logger } from '@/app/lib/logger'
 import { PreOrdersService } from '@/app/services/preOrders.service'
 import { usePreOrderStore } from '@/app/stores/preOrderStore'
 import BackButton from '@/app/ui/back-button'
+import StepAlert from '@/app/ui/step-alert'
 import {
 	ArrowPathIcon,
 	CheckCircleIcon,
 	PhotoIcon,
-	XCircleIcon,
 } from '@heroicons/react/24/outline'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import clsx from 'clsx'
 import { useRouter } from 'next/navigation'
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
+
+const IMAGE_FILE_ERROR = 'Use a JPEG, PNG, or WebP under 2 MB.'
 
 export default function Instructions() {
 	const [error, setError] = useState<string | null>(null)
@@ -66,8 +69,16 @@ export default function Instructions() {
 		},
 	})
 
-	const instructionsFormId = useId()
+	const instructionsFormId = 'instructions-form'
 	const router = useRouter()
+	const validationErrors = getValidationErrors(apiError)
+	const hasServerFieldError = (field: 'height' | 'weight' | 'gender') =>
+		!isPending &&
+		isError &&
+		validationErrors.some(
+			(issue) =>
+				issue.field === field || issue.field.endsWith(`.${field}`)
+		)
 
 	const handleImageUpload = (
 		e: React.ChangeEvent<HTMLInputElement>,
@@ -98,7 +109,7 @@ export default function Instructions() {
 			reader.readAsDataURL(file)
 		} catch (err) {
 			if (err instanceof z.ZodError) {
-				setError(err.issues.map((i) => i.message).join(', '))
+				setError(IMAGE_FILE_ERROR)
 			} else {
 				setError((err as Error).message)
 			}
@@ -106,6 +117,7 @@ export default function Instructions() {
 	}
 
 	const handleUpload = async (formData: PreOrderFormData) => {
+		setError(null)
 		if (!frontImage || !sideImage) {
 			setError('Please upload both front and side pictures')
 			return
@@ -238,7 +250,9 @@ export default function Instructions() {
 							className={clsx(
 								'w-full h-11 px-2 py-1 border rounded text-right',
 								{
-									'border-red-500': errors.height,
+									'border-red-500':
+										errors.height ||
+										hasServerFieldError('height'),
 								}
 							)}
 							step="0.1"
@@ -255,7 +269,9 @@ export default function Instructions() {
 							className={clsx(
 								'w-full h-11 px-2 py-1 border rounded text-right',
 								{
-									'border-red-500': errors.weight,
+									'border-red-500':
+										errors.weight ||
+										hasServerFieldError('weight'),
 								}
 							)}
 							step="0.1"
@@ -263,45 +279,57 @@ export default function Instructions() {
 						/>
 					</div>
 				</form>
-				<div className="w-full h-5 flex flex-col gap-1 justify-start">
+				<div className="w-full min-h-5 flex flex-col gap-1 justify-start">
 					{errors.gender && (
-						<small className="text-sm text-red-600 text-left">
-							Gender error: {errors.gender.message}
-						</small>
+						<p className="text-sm text-red-600 text-left">
+							{errors.gender.message}
+						</p>
 					)}
 					{errors.height && (
-						<small className="text-sm text-red-600 text-left">
-							Height error: {errors.height.message}
-						</small>
+						<p className="text-sm text-red-600 text-left">
+							{errors.height.message}
+						</p>
 					)}
 					{errors.weight && (
-						<small className="text-sm text-red-600 text-left">
-							Weight error: {errors.weight.message}
-						</small>
+						<p className="text-sm text-red-600 text-left">
+							{errors.weight.message}
+						</p>
 					)}
 				</div>
 
-				{/* Status indicators */}
-				<div className="h-12 mt-4 text-sm md:text-base">
-					{isPending && (
-						<div className="p-3 bg-blue-50 text-blue-700 rounded-lg flex items-center justify-center gap-2">
-							<ArrowPathIcon className="w-5 h-5 animate-spin" />
-							<small>Uploading images, please wait...</small>
-						</div>
-					)}
-
-					{isSuccess && (
+				<div className="mt-4 text-sm md:text-base space-y-3">
+					{isSuccess && !error && !isError && (
 						<div className="p-3 bg-green-50 text-green-700 rounded-lg flex items-center justify-center gap-2">
 							<CheckCircleIcon className="w-5 h-5" />
 							<small>Images uploaded successfully!</small>
 						</div>
 					)}
 
-					{error && (
-						<div className="p-3 bg-red-50 text-red-700 rounded-lg flex items-center justify-center gap-2">
-							<XCircleIcon className="w-5 h-5" />
-							<small>{error}</small>
-						</div>
+					{(error || isError) && (
+						<StepAlert>
+							{error ??
+								(validationErrors.length > 0 ? (
+									validationErrors.length === 1 ? (
+										validationErrors[0].message
+									) : (
+										<ul className="space-y-1">
+											{validationErrors.map(
+												(issue, index) => (
+													<li
+														key={`${issue.field}-${index}`}>
+														{issue.message}
+													</li>
+												)
+											)}
+										</ul>
+									)
+								) : (
+									getErrorMessage(
+										apiError,
+										'Unable to process your photos. Please try again.',
+									)
+								))}
+						</StepAlert>
 					)}
 				</div>
 			</section>
@@ -312,7 +340,7 @@ export default function Instructions() {
 						type="submit"
 						form={instructionsFormId}
 						className={clsx(
-							'w-full h-14 rounded-lg border-2 flex justify-center items-center transition-all ease-in-out',
+							'w-full h-14 rounded-lg border-2 flex justify-center items-center gap-2 transition-all ease-in-out',
 							{
 								'bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed pointer-events-none':
 									isPending,
@@ -321,7 +349,14 @@ export default function Instructions() {
 							}
 						)}
 						disabled={isPending}>
-						<span>Next</span>
+						{isPending ? (
+							<>
+								<ArrowPathIcon className="w-5 h-5 animate-spin" />
+								Uploading...
+							</>
+						) : (
+							<span>Next</span>
+						)}
 					</button>
 				</div>
 			</footer>
