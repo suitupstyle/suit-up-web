@@ -39,7 +39,7 @@ export default function Page() {
 		onSuccess: (response) => {
 			logger.log('Create data', response)
 			setId(response.data.id)
-			router.push(`/orders/instructions`)
+			router.push('/orders/instructions')
 		},
 		onError: (error) => {
 			logger.error('Error:', error)
@@ -58,9 +58,9 @@ export default function Page() {
 	const isBusy = itemsLoading || isPending
 	const canStart = Boolean(items?.length) && !itemsError
 	const catalogPrice = items?.reduce(
-	(sum, item) => sum + Number(item.price),
-	0,
-)
+		(sum, item) => sum + Number(item.price),
+		0,
+	)
 	const buttonDisabled = isBusy || (!errorMessage && !canStart)
 
 	const onSubmit = () => {
@@ -80,6 +80,7 @@ export default function Page() {
 						SuitUp - Dress for <br /> Success
 					</h1>
 				</header>
+
 				<section className="flex w-full flex-col items-center gap-10 md:gap-2">
 					<div className="relative w-full">
 						<Image
@@ -94,25 +95,26 @@ export default function Page() {
 							Save My Style
 						</button>
 					</div>
+
 					{errorMessage && (
-						<StepAlert
-							tone="dark"
-							className="w-full">
+						<StepAlert tone="dark" className="w-full">
 							{errorMessage}
 						</StepAlert>
 					)}
+
+					{canStart && catalogPrice !== undefined && (
+						<p className="text-lg font-semibold">
+							US${catalogPrice.toFixed(2)} before tax
+						</p>
+					)}
+
 					<button
-						{canStart && catalogPrice !== undefined && (
-	<p className="text-lg font-semibold">
-		US${catalogPrice.toFixed(2)} before tax
-	</p>
-)}
 						onPointerDown={onSubmit}
 						disabled={buttonDisabled}
 						className="w-full h-14 flex justify-center items-center bg-white text-black rounded-lg transition-all ease-in-out hover:bg-radial-circle hover:from-gray-100 hover:to-gray-400 hover:tracking-widest hover:shadow-gray-700 hover:shadow-lg disabled:bg-gray-300 disabled:text-gray-500 disabled:hover:tracking-normal disabled:hover:shadow-none">
 						{isBusy ? (
 							<span className="flex items-center gap-1">
-								<ArrowPathIcon className="w-5 h-5 animate-spin " />
+								<ArrowPathIcon className="w-5 h-5 animate-spin" />
 								Loading...
 							</span>
 						) : errorMessage ? (
@@ -122,6 +124,7 @@ export default function Page() {
 						)}
 					</button>
 				</section>
+
 				<footer>
 					<div className="w-64 mx-auto text-sm text-gray-400 font-normal">
 						<p>
