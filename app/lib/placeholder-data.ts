@@ -4,7 +4,7 @@ export const items: Item = {
   id: 1,
   name: 'Black Professional Business Suit',
   desc: 'Description',
-  price: 99.0,
+  price: 479.99,
   imageUrl: '/home-suit.webp'
 }
 
@@ -117,7 +117,7 @@ export const detailsResponse: DetailsResponse = {
 }
 
 export const orderCost: OrderCost = {
-  cost: 900,
+  cost: items.price,
   taxRate: 0.08,
 }
 
@@ -128,7 +128,7 @@ export const paymentResponse: PaymentResponse = {
 export const paymentConfirmation: PaymentConfirmation = {
   orderId: crypto.randomUUID(),
   items: [items],
-  amountPayed: 972,
+  amountPayed: Math.round(orderCost.cost * (1 + orderCost.taxRate) * 100) / 100,
   measurementStatus: 'success',
 }
 
